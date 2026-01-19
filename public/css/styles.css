@@ -1,11 +1,13 @@
 /******* Change Box Model ***************/
 *,
-*:before,
-*:after {
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-/* BODY AND GENERAL STYLES */
+/* ===============================
+   BODY & GLOBAL
+================================ */
 body {
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
@@ -13,10 +15,11 @@ body {
   color: #111;
 }
 
-/* SITE HEADER */
+/* ===============================
+   HEADER
+================================ */
 .site-header {
   background-color: #1f2933;
-  color: white;
   padding: 1rem;
 }
 
@@ -29,15 +32,18 @@ body {
 .logo {
   margin: 0;
   font-size: 1.8rem;
+  color: #fff;
 }
 
 .account-link {
-  color: white;
+  color: #fff;
   text-decoration: none;
   font-weight: bold;
 }
 
-/* NAVIGATION */
+/* ===============================
+   NAVIGATION
+================================ */
 .main-nav {
   background-color: #111827;
   padding: 0.5rem 1rem;
@@ -49,143 +55,176 @@ body {
   padding: 0;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 1.5rem;
 }
 
 .main-nav a {
   color: #fff;
   text-decoration: none;
   font-weight: bold;
-  font-size: 1rem;
 }
 
 .main-nav a:hover {
   color: #0ea5e9;
 }
 
-/* HERO SECTION (MOBILE FIRST) */
+/* ===============================
+   HERO (MOBILE FIRST)
+================================ */
 .hero {
   padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  position: relative;
 }
 
-/* HERO TEXT BLOCK */
 .hero-text h2 {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
-/* DELorean SHADOW BOX */
 .delorean-box {
-  display: inline-block;
-  background-color: #fcfcfc;
-  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.75);
+  /* TRUE transparency */
+  padding: 2.5rem;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-  max-width: 320px;
+  max-width: 260px;
+  width: 100;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0);
+  position: relative;
+  z-index: 3;
+
+  /* optional glass effect */
+  backdrop-filter: blur(1px);
 }
 
-/* BLUE TEXT */
+.delorean-box h3 {
+  font-size: 1.3rem;
+  max-width: 100%;
+  white-space: nowrap;
+  margin-bottom: -0.7rem;
+}
+
 .delorean-box,
 .delorean-box h3,
 .delorean-box li {
   color: #0ea5e9;
 }
 
-/* LIST CLEANUP */
 .delorean-box ul {
   list-style: none;
   padding: 0;
-  margin: 0.75rem 0;
+  font-size: 1.15rem;
+  line-height: 1.5;
 }
 
-.delorean-box li {
-  margin-bottom: 0.5rem;
-}
-
-/* CTA BUTTON */
 .cta-button {
   background-color: #0ea5e9;
-  color: #000;
   border: none;
   padding: 0.6rem 1.2rem;
   font-weight: bold;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
-  margin-top: 0.75rem;
 }
 
-/* HERO IMAGE */
 .hero-image img {
-  width: 100%;
-  max-width: 400px;
+  width: 80%;
   display: block;
 }
 
+/* ===============================
+   UPGRADES & REVIEWS (MOBILE)
+================================ */
+.content-grid {
+  padding: 1.5rem 1rem;
+}
+
+/* UPGRADES */
+.upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.upgrade-item {
+  background-color: #e0f2fe;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0 6px 14px rgba(14, 165, 233, 0.6);
+}
+
+.upgrade-item img {
+  max-width: 100%;
+}
+
+.upgrade-item a {
+  display: block;
+  margin-top: 0.5rem;
+  font-weight: bold;
+  color: #0369a1;
+  text-decoration: none;
+}
+
+/* ===============================
+   REVIEWS (BULLETS RESTORED)
+================================ */
+.reviews ul {
+  list-style: disc;
+  /* restore bullet points */
+  padding-left: 1.5rem;
+  /* proper indentation */
+  margin: 0;
+}
+
+.reviews li {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 1.25rem;
+}
+
+/* ===============================
+   DESKTOP LAYOUT
+================================ */
 @media screen and (min-width: 768px) {
 
+  /* HERO OVERLAP EFFECT */
   .hero {
+    position: relative;
     flex-direction: row;
     align-items: flex-start;
-    position: relative;
   }
 
-  /* LEFT SIDE (TEXT + BOX) */
   .hero-text {
     position: relative;
-    z-index: 2;
-    /* box stays on top */
+    z-index: 3;
   }
 
-  /* RIGHT SIDE IMAGE */
   .hero-image {
     position: absolute;
-    left: 260px;
-    /* touches box edge */
-    top: 50%;
-    /* vertical center of box */
+    left: 180px;      /* moves image deeper INTO the box */
+    top: 60%;         /* slightly lower so it sits under text */
     transform: translateY(-50%);
-    z-index: 1;
+    z-index: 2;       /* under the box, above background */
   }
 
   .hero-image img {
-    max-width: 420px;
+    max-width: 400px;
     display: block;
   }
-}
 
-
-/* ===============================
-   REVIEWS + UPGRADES LAYOUT
-================================ */
-
-/* MOBILE DEFAULT = stacked (no change needed) */
-
-@media screen and (min-width: 768px) {
-
-  /* Create two-column layout */
-  .reviews,
-  .upgrades {
-    width: 100%;
-  }
-
-  /* Parent layout using grid */
-  .reviews {
-    grid-column: 1;
-  }
-
-  .upgrades {
-    grid-column: 2;
-  }
-
-  /* Grid container using body flow */
-  main {
+  /* UPGRADES (LEFT) + REVIEWS (RIGHT) */
+  .content-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
-    padding: 1.5rem 1rem;
     align-items: start;
+  }
+
+  .upgrades {
+    grid-column: 1;
+  }
+
+  .reviews {
+    grid-column: 2;
   }
 }
