@@ -48,3 +48,11 @@ CREATE TABLE IF NOT EXISTS public.account
     account_type account_type NOT NULL DEFAULT 'Client'::account_type,
     CONSTRAINT account_pkey PRIMARY KEY (account_id)
 );
+
+-- Data for table 'classification'
+INSERT INTO public.classificationn (classification_name)
+VALUES ('Custom'),
+	('Sport'),
+	('SUV'),
+	('Truck'),
+	('Sedan');
