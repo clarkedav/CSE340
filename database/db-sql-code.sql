@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS public.account
 );
 
 -- Data for table 'classification'
-INSERT INTO public.classificationn (classification_name)
+INSERT INTO public.classification (classification_name)
 VALUES ('Custom'),
 	('Sport'),
 	('SUV'),
