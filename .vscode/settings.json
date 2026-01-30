@@ -3,7 +3,7 @@
         {
             "pgOptions": {
                 "ssl": {
-                    "rejectUnauthorized": false
+                    "rejectUnauthorized": true
                 }
             },
             "ssh": "Disabled",
