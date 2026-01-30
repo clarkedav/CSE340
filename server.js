@@ -42,20 +42,12 @@ app.use("/inv", inventoryRoute)
  * Local Server Information
  * Values from .env (environment) file
  *************************/
-/*const port = process.env.PORT
+const port = process.env.PORT
 const host = process.env.HOST
 
 /* ***********************
  * Log statement to confirm server operation
  *************************/
-/*app.listen(port, () => {
+app.listen(port, () => {
   console.log(`app listening on ${host}:${port}`)
-}) */
-
-
-  const PORT = process.env.PORT || 3000; // fallback for local dev
-
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
-});
-
+}) 
