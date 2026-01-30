@@ -8,10 +8,12 @@
             },
             "ssh": "Disabled",
             "previewLimit": 50,
-            "server": "localhost",
+            "server": "dpg-d5t0ac14tr6s73ca7u60-a.ohio-postgres.render.com",
+            "port": 5432,
             "driver": "PostgreSQL",
-            "name": "Render Postgres",
-            "connectString": "postgresql://bd340:XTWz01ErJK3psAU3ov2ikykg32eEhFbp@dpg-d5lqn7e3jp1c739ltpl0-a.ohio-postgres.render.com/cse340_database_3pxx"
+            "name": "CSE340",
+            "database": "cse340_db_uava",
+            "username": "cse340_db_uava_user"
         }
     ]
 }
