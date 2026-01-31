@@ -28,6 +28,13 @@ app.set("layout", "./layouts/layout") // not at views root
  *************************/
 //app.use(static)
 
+// Intentional error route (Task 3)
+app.get(
+  "/trigger-error",
+  utilities.handleErrors(baseController.triggerError)
+)
+
+
 // Index route
 app.get("/", utilities.handleErrors(baseController.buildHome))
 

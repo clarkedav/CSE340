@@ -7,3 +7,8 @@ baseController.buildHome = async function(req, res){
 }
 
 module.exports = baseController
+
+async function triggerError(req, res, next) {
+  throw new Error("Intentional server error for testing.")
+}
+

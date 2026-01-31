@@ -68,3 +68,18 @@ Util.buildClassificationGrid = async function(data){
   }
   return grid
 }
+
+// Build HTML for a single vehicle detail
+Util.buildVehicleDetail = function(vehicle) {
+  return `
+  <div class="vehicle-detail">
+    <img src="${vehicle.inv_image}" alt="Image of ${vehicle.inv_make} ${vehicle.inv_model}">
+    <h1>${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}</h1>
+    <p><strong>Price:</strong> $${new Intl.NumberFormat().format(vehicle.inv_price)}</p>
+    <p><strong>Mileage:</strong> ${new Intl.NumberFormat().format(vehicle.inv_miles)} miles</p>
+    <p><strong>Color:</strong> ${vehicle.inv_color}</p>
+    <p><strong>Description:</strong> ${vehicle.inv_description}</p>
+  </div>
+  `
+}
+
