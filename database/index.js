@@ -36,3 +36,19 @@ module.exports = {
   })
   module.exports = pool
 } 
+
+
+// Database connection
+/* 
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  user: 'postgres',      // your DB username
+  host: 'localhost',
+  database: 'assignment2', // your DB name
+  password: 'password',  // your DB password
+  port: 5432
+});
+
+module.exports = pool;
+*/

@@ -7,6 +7,7 @@
  *************************/
 const session = require("express-session")
 const pool = require('./database/')
+const flash = require("connect-flash")
 const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
 const env = require("dotenv").config()
@@ -14,9 +15,26 @@ const app = express()
 const baseController = require("./controllers/baseController")
 const inventoryRoute = require("./routes/inventoryRoute")
 const utilities = require("./utilities/")
+const accountRoute = require("./routes/accountRoute")
 //const static = require("./routes/static")
 
+
+
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+  })
+)
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.set('view engine', 'ejs');
+
+// Static Files
 app.use(express.static("public"))
+
 
 
 /* ***********************
@@ -33,6 +51,7 @@ app.use(express.static("public"))
   name: 'sessionId',
 }))
 
+app.use(flash())
 
 
 
@@ -47,6 +66,11 @@ app.set("layout", "./layouts/layout") // not at views root
  * Routes
  *************************/
 //app.use(static)
+app.use("/account", accountRoute)
+app.use((req, res, next) => {
+  res.locals.messages = require("express-messages")(req, res)
+  next()
+})
 
 // Intentional error route (Task 3)
 app.get(
@@ -101,6 +125,14 @@ app.use(async (err, req, res, next) => {
     message,
     nav                                    // Pass nav so partials can render
   })
+})
+
+
+// Express Messages Middleware
+app.use(require('connect-flash')())
+app.use(function(req, res, next){
+  res.locals.messages = require('express-messages')(req, res)
+  next()
 })
 
 /* ***********************
