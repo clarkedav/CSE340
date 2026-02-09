@@ -13,9 +13,20 @@ async function buildLogin(req, res, next) {
   })
 }
 
-module.exports = { buildLogin }
+/* ****************************************
+*  Deliver registration view
+* *************************************** */
+async function buildRegister(req, res, next) {
+  let nav = await utilities.getNav()
+  res.render("account/register", {
+    title: "Register",
+    nav,
+    message: req.flash("notice")
+  })
+}
 
 
+module.exports = { buildLogin,  buildRegister }
 
 const { findByEmail } = require('../models/account-model')
 
@@ -50,6 +61,7 @@ const login = async (req, res) => {
 
 module.exports = {
   buildLogin,
+  buildRegister,
   showLogin,
   login
 }

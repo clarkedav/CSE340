@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <main class="form-container">
+
+        <h1>
+            <%= title %>
+        </h1>
+
+        <!-- Flash message -->
+        <% if (message && message.length> 0) { %>
+            <div class="flash-message">
+                <%= message[0] %>
+            </div>
+            <% } %>
+
+                <!-- Registration Form -->
+                <form action="/account/register" method="post" class="account-form">
+
+                    <label for="account_firstname">First Name</label>
+                    <input type="text" id="account_firstname" name="account_firstname" required>
+
+                    <label for="account_lastname">Last Name</label>
+                    <input type="text" id="account_lastname" name="account_lastname" required>
+
+                    <label for="account_email">Email Address</label>
+                    <input type="email" id="account_email" name="account_email" required>
+
+                    <label for="account_password">Password</label>
+                    <input type="password" id="account_password" name="account_password" required>
+                    <label class="toggle-password">
+                        <input type="checkbox" onclick="togglePassword()"> Show Password
+                    </label>
+                    
+                    <script>
+                        function togglePassword() {
+                            const pw = document.getElementById("account_password")
+                            pw.type = pw.type === "password" ? "text" : "password"
+                        }
+                    </script>
+
+
+                    <p class="password-rules">
+                        Password must be at least 12 characters and include:
+                        a capital letter, a number, and a special character.
+                    </p>
+
+                    <button type="submit">Register</button>
+
+                </form>
+
+    </main>
+</body>
+
+</html>
