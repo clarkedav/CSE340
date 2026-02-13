@@ -30,10 +30,8 @@ Util.getNav = async function (req, res, next) {
  * Wrap other function in this for 
  * General Error Handling
  **************************************** */
-Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
-
-
-module.exports = Util
+Util.handleErrors = fn => (req, res, next) => 
+  Promise.resolve(fn(req, res, next)).catch(next)
 
 
 /* **************************************
@@ -64,10 +62,11 @@ Util.buildClassificationGrid = async function(data){
     })
     grid += '</ul>'
   } else { 
-    grid += '<p class="notice">Sorry, no matching vehicles could be found.</p>'
+    grid = '<p class="notice">Sorry, no matching vehicles could be found.</p>'
   }
   return grid
 }
+
 
 // Build HTML for a single vehicle detail
 Util.buildVehicleDetail = function(vehicle) {
@@ -83,3 +82,5 @@ Util.buildVehicleDetail = function(vehicle) {
   `
 }
 
+
+module.exports = Util

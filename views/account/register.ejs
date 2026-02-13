@@ -11,54 +11,77 @@
 
 <body>
     <main class="form-container">
-
         <h1>
             <%= title %>
         </h1>
 
-        <!-- Flash message -->
-        <% if (message && message.length> 0) { %>
-            <div class="flash-message">
-                <%= message[0] %>
-            </div>
-            <% } %>
+    <!-- Flash messages -->
+    <% if (messages.notice) { %>
+        <div class="notice-box">
+            <% messages.notice.forEach(function(msg){ %>
+                <p>
+                    <%= msg %>
+                </p>
+                <% }) %>
+        </div>
+        <% } %>
 
-                <!-- Registration Form -->
-                <form action="/account/register" method="post" class="account-form">
+            <!-- Validation errors -->
+            <% if (errors && errors.length> 0) { %>
+                <div class="notice-box">
+                    <% errors.forEach(function(error) { %>
+                        <p>
+                            <%= error.msg %>
+                        </p>
+                        <% }) %>
+                </div>
+                <% } %>
 
-                    <label for="account_firstname">First Name</label>
-                    <input type="text" id="account_firstname" name="account_firstname" required>
+                    <!-- Registration Form -->
+                    <form action="/account/register" method="post" class="account-form">
 
-                    <label for="account_lastname">Last Name</label>
-                    <input type="text" id="account_lastname" name="account_lastname" required>
+                        <!-- First Name -->
+                        <label for="account_firstname">First Name</label>
+                        <input type="text" name="account_firstname" id="accountFirstname" required
+                            value="<%= locals.account_firstname || '' %>">
 
-                    <label for="account_email">Email Address</label>
-                    <input type="email" id="account_email" name="account_email" required>
+                        <!-- Last Name -->
+                        <label for="account_lastname">Last Name</label>
+                        <input type="text" name="account_lastname" id="accountLastname" required
+                            value="<%= locals.account_lastname || '' %>">
 
-                    <label for="account_password">Password</label>
-                    <input type="password" id="account_password" name="account_password" required>
-                    <label class="toggle-password">
-                        <input type="checkbox" onclick="togglePassword()"> Show Password
-                    </label>
-                    
-                    <script>
-                        function togglePassword() {
-                            const pw = document.getElementById("account_password")
-                            pw.type = pw.type === "password" ? "text" : "password"
-                        }
-                    </script>
+                        <!-- Email -->
+                        <label for="account_email">Email Address</label>
+                        <input type="email" name="account_email" id="accountEmail" required
+                            value="<%= locals.account_email || '' %>">
 
+                        <!-- Password -->
+                        <label for="account_password">Password</label>
+                        <input type="password" id="account_password" name="account_password" required
+                            pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
 
-                    <p class="password-rules">
-                        Password must be at least 12 characters and include:
-                        a capital letter, a number, and a special character.
-                    </p>
+                        <!-- Toggle password -->
+                        <label class="toggle-password">
+                            <input type="checkbox" onclick="togglePassword()"> Show Password
+                        </label>
 
-                    <button type="submit">Register</button>
+                        <!-- Password requirements -->
+                        <p class="password-rules">
+                            Password must be at least 12 characters and include: a capital letter, a number, and a
+                            special character.
+                        </p>
 
-                </form>
-
+                        <button type="submit">Register</button>
+                    </form>
     </main>
+
+    <script>
+        // Toggle password visibility
+        function togglePassword() {
+            const pw = document.getElementById("account_password");
+            pw.type = pw.type === "password" ? "text" : "password";
+        }
+    </script>
 </body>
 
 </html>

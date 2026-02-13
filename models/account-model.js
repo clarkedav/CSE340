@@ -1,20 +1,64 @@
-const db = require('../database') // our new query wrapper
+/* ******************************************
+ * Account Model
+ * Handles database queries for account table
+ *******************************************/
+const pool = require("../database")
 
-// Get user by email
-async function findByEmail(account_email) {
-  const query = 'SELECT * FROM account WHERE account_email = $1'
-  
+/* *****************************
+*   Register new account
+* *************************** */
+async function registerAccount(account_firstname, account_lastname, account_email, account_password) {
   try {
-    // Use db.query, works for both dev (with logging) and prod
-    const { rows } = await db.query(query, [account_email])
-    return rows[0] // return first matching account
+    const sql = `
+      INSERT INTO account 
+      (account_firstname, account_lastname, account_email, account_password, account_type)
+      VALUES ($1, $2, $3, $4, 'Client')
+      RETURNING *
+    `
+    const result = await pool.query(sql, [
+      account_firstname,
+      account_lastname,
+      account_email,
+      account_password
+    ])
+    return result
   } catch (error) {
-    console.error('Error in findByEmail:', error)
-    throw error
+    console.error("Error in registerAccount model:", error)
+    return null
   }
 }
 
+/* **********************
+ *   Check for existing email
+ * ********************* */
+async function checkExistingEmail(account_email) {
+  try {
+    const sql = "SELECT * FROM account WHERE account_email = $1"
+    const email = await pool.query(sql, [account_email])
+    return email.rowCount  // returns number of rows found
+  } catch (error) {
+    return error.message  // return error message if something goes wrong
+  }
+}
+
+/* ********************************
+ * Get account by email
+ * ******************************** */
+async function getAccountByEmail(account_email) {
+  try {
+    const sql = "SELECT * FROM account WHERE account_email = $1"
+    const result = await pool.query(sql, [account_email])
+    return result.rows[0]  // returns account data or undefined
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
+
 module.exports = {
-  findByEmail
+  registerAccount,
+  checkExistingEmail,
+   getAccountByEmail,
 }
 
