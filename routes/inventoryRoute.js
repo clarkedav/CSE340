@@ -1,19 +1,61 @@
-// Needed Resources 
+// Required resources
 const express = require("express")
-const router = new express.Router() 
-const invController = require("../controllers/invController")
+const router = express.Router()
+const invCont = require("../controllers/invController")
 const utilities = require("../utilities/")
+// Validation modules (ensure these exist)
+const invValidate = require("../utilities/inventory-validation")
+const classificationValidate = require("../utilities/classification-validation")
 
-// Route to build inventory by classification view
+/* ***************************
+ * Routes for Inventory Management
+ * ***************************/
+
+// 1️ Inventory by classification
 router.get(
   "/type/:classificationId",
-  utilities.handleErrors(invController.buildByClassificationId)
+  utilities.handleErrors(invCont.buildByClassificationId)
 )
 
-// Vehicle Detail route
+// 2️ Vehicle detail view
 router.get(
   "/detail/:inv_id",
-  utilities.handleErrors(invController.buildDetail)
+  utilities.handleErrors(invCont.buildDetail)
+)
+
+// 3️ Management view
+router.get(
+  "/",
+  utilities.handleErrors(invCont.buildManagement)
+)
+
+// 4️ Deliver add classification form
+router.get(
+  "/add-classification",
+  utilities.handleErrors(invCont.buildAddClassification)
+)
+
+// 5️ Process add classification form
+router.post(
+  "/add-classification",
+  classificationValidate.classificationRules(),   // server-side rules
+  classificationValidate.checkClassificationData, // validation check
+  utilities.handleErrors(invCont.addClassification)
+)
+
+// 6️⃣ Deliver add inventory form
+router.get(
+  "/add-inventory",
+  utilities.handleErrors(invCont.buildAddInventory)
+)
+
+// 7️⃣ Process add inventory form
+router.post(
+  "/add-inventory",
+  invValidate.inventoryRules(),   // server-side rules
+  invValidate.checkInventoryData, // validation check
+  utilities.handleErrors(invCont.addInventory)
 )
 
 module.exports = router
+

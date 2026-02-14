@@ -1,0 +1,58 @@
+<h1>Add New Inventory</h1>
+
+<!-- Flash messages -->
+<% if (messages.notice) { %>
+    <div class="notice-box">
+        <% messages.notice.forEach(function(msg){ %>
+            <p>
+                <%= msg %>
+            </p>
+            <% }) %>
+    </div>
+    <% } %>
+
+        
+
+    <form action="/inv/add-inventory" method="POST" novalidate>
+        <!-- Classification Select List -->
+        <label for="classificationList">Classification</label>
+        <%- classificationList %>
+
+            <!-- Make -->
+            <label for="invMake">Make</label>
+            <input type="text" id="invMake" name="inv_make" value="<%= sticky ? sticky.inv_make : '' %>"
+                required>
+
+            <!-- Model -->
+            <label for="invModel">Model</label>
+            <input type="text" id="invModel" name="inv_model"
+                value="<%= sticky ? sticky.inv_model : '' %>" required>
+
+            <!-- Description -->
+            <label for="invDescription">Description</label>
+            <textarea id="invDescription" name="inv_description"
+                required><%= sticky ? sticky.inv_description : '' %></textarea>
+
+            <!-- Price -->
+            <label for="invPrice">Price</label>
+            <input type="number" id="invPrice" name="inv_price" step="0.01"
+                value="<%= sticky ? sticky.inv_price : '' %>" required>
+
+            <!-- Year -->
+            <label for="invYear">Year</label>
+            <input type="number" id="invYear" name="inv_year"
+                value="<%= sticky ? sticky.inv_year : '' %>" required>
+
+            <!-- Miles -->
+            <label for="invMiles">Mileage</label>
+            <input type="number" id="invMiles" name="inv_miles"
+                value="<%= sticky ? sticky.inv_miles : '' %>" required>
+
+            <!-- Color -->
+            <label for="invColor">Color</label>
+            <input type="text" id="invColor" name="inv_color"
+                value="<%= sticky ? sticky.inv_color : '' %>" required>
+
+            <button type="submit">Add Inventory</button>
+    </form>
+

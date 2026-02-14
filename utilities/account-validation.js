@@ -97,8 +97,6 @@ validate.checkLoginData = async (req, res, next) => {
 }
 
 
-module.exports = validate
-
 
 // Login Data Validation Rules
 validate.loginRules = () => {
@@ -125,3 +123,5 @@ validate.loginRules = () => {
   ]
 }
 
+
+module.exports = validate
