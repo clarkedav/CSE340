@@ -43,13 +43,13 @@ router.post(
   utilities.handleErrors(invCont.addClassification)
 )
 
-// 6️⃣ Deliver add inventory form
+// 6 Deliver add inventory form
 router.get(
   "/add-inventory",
   utilities.handleErrors(invCont.buildAddInventory)
 )
 
-// 7️⃣ Process add inventory form
+// 7️ Process add inventory form
 router.post(
   "/add-inventory",
   invValidate.inventoryRules(),   // server-side rules
