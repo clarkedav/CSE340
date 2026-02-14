@@ -7,20 +7,22 @@
  * Require Statements
  *************************/
 const express = require("express")
+const cookieParser = require("cookie-parser")
 const session = require("express-session")
 const flash = require("connect-flash")
 const expressLayouts = require("express-ejs-layouts")
+const path = require("path")
 const pool = require("./database/")
-const env = require("dotenv").config()
+require("dotenv").config()
 
 const baseController = require("./controllers/baseController")
 const inventoryRoute = require("./routes/inventoryRoute")
 const accountRoute = require("./routes/accountRoute")
 const utilities = require("./utilities/")
-// Express Messages (MUST come after flash and BEFORE routes)
-const expressMessages = require("express-messages")
-const path = require("path")
 
+/* ***********************
+ * Express App
+ *************************/
 const app = express()
 
 /* ***********************
@@ -30,6 +32,13 @@ const app = express()
 // Favicon handler to prevent repeated 404s
 app.get("/favicon.ico", (req, res) => res.status(204).end())
 
+// Body parsing
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+
+// Cookie parser
+app.use(cookieParser())
+
 // Session with PostgreSQL store
 app.use(
   session({
@@ -38,29 +47,21 @@ app.use(
       pool,
     }),
     secret: process.env.SESSION_SECRET || "changeThisSecret",
-    resave: false,            // prevents unnecessary updates
-    saveUninitialized: false, // only save sessions when modified
+    resave: false,
+    saveUninitialized: false,
     name: "sessionId",
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
-    },
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 1 day
   })
 )
-
-// Body parsing
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
 
 // Flash messages
 app.use(flash())
 
 // Assign flash messages HTML to res.locals
 app.use((req, res, next) => {
-  // Collect all flash messages as an object
   res.locals.messages = req.flash()
   next()
 })
-
 
 // Static Files
 app.use(express.static("public"))
@@ -73,11 +74,19 @@ app.use(expressLayouts)
 app.set("layout", "./layouts/layout")
 
 /* ***********************
+ * Apply JWT Middleware Globally
+ *************************/
+app.use(utilities.checkJWTToken)
+
+/* ***********************
  * Routes
  *************************/
 
 // Account routes
 app.use("/account", accountRoute)
+
+// Inventory routes
+app.use("/inv", inventoryRoute)
 
 // Intentional error route (Task 3)
 app.get(
@@ -87,9 +96,6 @@ app.get(
 
 // Index route
 app.get("/", utilities.handleErrors(baseController.buildHome))
-
-// Inventory routes
-app.use("/inv", inventoryRoute)
 
 /* ***********************
  * File Not Found Route - must be last route in list
@@ -119,8 +125,7 @@ app.use(async (err, req, res, next) => {
   if (err.status === 404) {
     message = err.message
   } else {
-    message =
-      "Oh no! There was a crash. Maybe try a different route?"
+    message = "Oh no! There was a crash. Maybe try a different route?"
   }
 
   res.status(err.status || 500).render("errors/error", {
@@ -138,8 +143,9 @@ const port = process.env.PORT || 3000
 const host = process.env.HOST || "localhost"
 
 /* ***********************
- * Log statement to confirm server operation
+ * Start Server
  *************************/
 app.listen(port, () => {
   console.log(`app listening on ${host}:${port}`)
 })
+
