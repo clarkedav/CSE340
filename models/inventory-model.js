@@ -96,4 +96,9 @@ async function addInventory(
   }
 }
 
+
+invModel.insertClassification = insertClassification
+invModel.addInventory = addInventory
+
+
 module.exports = invModel
