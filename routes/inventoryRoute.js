@@ -1,39 +1,37 @@
 const express = require("express")
-const router = express.Router()
+const router = new express.Router()
 const utilities = require("../utilities/")
-const accountController = require("../controllers/accountController")
-const regValidate = require("../utilities/account-validation")
+const invController = require("../controllers/invController")
 
-// Deliver login view
-router.get("/login", utilities.handleErrors(accountController.buildLogin))
-
-// Deliver registration view
-router.get("/register", utilities.handleErrors(accountController.buildRegister))
-
-// Process registration
-router.post(
-  "/register",
-  regValidate.registrationRules(),
-  regValidate.checkRegData,
-  utilities.handleErrors(accountController.registerAccount)
-)
-
-// Process login
-router.post(
-  "/login",
-  regValidate.loginRules(),
-  regValidate.checkLoginData,
-  utilities.handleErrors(accountController.accountLogin)
-)
-
-// Default account management route → requires login
+// Inventory Management View
 router.get(
   "/",
-  utilities.checkJWTToken,  // checks token validity
-  utilities.checkLogin,     // ensures user is logged in
-  utilities.handleErrors(accountController.buildManagement)
+  utilities.checkJWTToken,
+  utilities.checkLogin,
+  utilities.handleErrors(invController.buildManagement)
+)
+
+// Add Classification View
+router.get(
+  "/add-classification",
+  utilities.checkJWTToken,
+  utilities.checkLogin,
+  utilities.handleErrors(invController.buildAddClassification)
+)
+
+// Add Inventory View
+router.get(
+  "/add-inventory",
+  utilities.checkJWTToken,
+  utilities.checkLogin,
+  utilities.handleErrors(invController.buildAddInventory)
+)
+
+// Return JSON inventory
+router.get(
+  "/getInventory/:classification_id",
+  utilities.handleErrors(invController.getInventoryJSON)
 )
 
 module.exports = router
-
 

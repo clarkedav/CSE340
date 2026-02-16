@@ -1,5 +1,8 @@
+// utilities/index.js
+'use strict'
+
 const jwt = require("jsonwebtoken")
-const invModel = require("../models/inventory-model") // for getNav
+const invModel = require("../models/inventory-model")
 require("dotenv").config()
 
 const Util = {}
@@ -36,7 +39,6 @@ Util.checkJWTToken = (req, res, next) => {
       return res.redirect("/account/login")
     }
 
-    // Token valid → store account info in locals
     res.locals.accountData = accountData
     res.locals.loggedin = 1
     next()
@@ -60,6 +62,26 @@ Util.checkLogin = (req, res, next) => {
  **************************************** */
 Util.handleErrors = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next)
+}
+
+/* ****************************************
+ * Build classification select list
+ **************************************** */
+Util.buildClassificationList = async function (selectedId = 0) {
+  try {
+    const data = await invModel.getClassifications()
+    let selectList = '<select id="classificationList" name="classification_id">'
+    selectList += '<option value="0">Choose a Classification</option>'
+    data.rows.forEach((row) => {
+      const selected = row.classification_id === Number(selectedId) ? ' selected' : ''
+      selectList += `<option value="${row.classification_id}"${selected}>${row.classification_name}</option>`
+    })
+    selectList += '</select>'
+    return selectList
+  } catch (error) {
+    console.error("Error building classification list:", error)
+    return null
+  }
 }
 
 module.exports = Util

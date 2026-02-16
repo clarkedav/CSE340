@@ -1,18 +1,19 @@
-<div class="inventory-management">
-    <h1>Inventory Management</h1>
+<main class="inventory-management">
 
-    <% if (messages.notice) { %>
-        <div class="notice-box">
-            <% messages.notice.forEach(function(msg){ %>
-                <p>
-                    <%= msg %>
-                </p>
-                <% }) %>
-        </div>
-        <% } %>
+    <div class="task-links">
+        <a href="/inv/add-classification">Add Classification</a>
+        <a href="/inv/add-inventory">Add Inventory</a>
+    </div>
 
-            <ul>
-                <li><a href="/inv/add-classification">Add Classification</a></li>
-                <li><a href="/inv/add-inventory">Add Inventory</a></li>
-            </ul>
-</div>
+    <h2>Manage Inventory</h2>
+    <p>Select a classification from the list below to see the vehicles belonging to that classification.</p>
+
+    <%- classificationSelect %>
+
+        <table id="inventoryDisplay"></table>
+
+        <noscript>JavaScript must be enabled to use this page.</noscript>
+
+</main>
+
+<script src="/js/inventory.js"></script>
