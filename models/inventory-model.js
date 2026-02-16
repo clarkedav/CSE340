@@ -2,61 +2,71 @@ const pool = require("../database/")
 
 const invModel = {}
 
-/* ***************************
- *  Get all classification data
- * ************************** */
+/* Get all classifications */
 invModel.getClassifications = async function () {
   try {
-    const sql = "SELECT * FROM public.classification ORDER BY classification_name"
-    return await pool.query(sql)
+    const sql = "SELECT * FROM classification ORDER BY classification_name"
+    const result = await pool.query(sql)
+    return result
   } catch (error) {
+    console.error("getClassifications error:", error)
     throw error
   }
 }
 
-/* ***************************
- *  Get inventory by classification id
- * ************************** */
+/* Get inventory by classification */
 invModel.getInventoryByClassificationId = async function (classification_id) {
   try {
     const sql = `
-      SELECT * FROM public.inventory AS i
-      JOIN public.classification AS c
-      ON i.classification_id = c.classification_id
-      WHERE i.classification_id = $1
+      SELECT * FROM inventory
+      WHERE classification_id = $1
     `
     return await pool.query(sql, [classification_id])
   } catch (error) {
+    console.error("getInventoryByClassificationId error:", error)
     throw error
   }
 }
 
-/* ***************************
- *  Get vehicle by inventory id
- * ************************** */
-invModel.getVehicleById = async function (inv_id) {
+/* Get inventory by id */
+invModel.getInventoryById = async function (inv_id) {
   try {
-    const sql = "SELECT * FROM public.inventory WHERE inv_id = $1"
-    return await pool.query(sql, [inv_id])
+    const sql = "SELECT * FROM inventory WHERE inv_id = $1"
+    const result = await pool.query(sql, [inv_id])
+    return result.rows[0]
   } catch (error) {
-    throw error
+    console.error("getInventoryById error:", error)
+    return null
   }
 }
 
-async function insertClassification(classification_name) {
+/* Insert classification */
+invModel.insertClassification = async function (classification_name) {
   try {
-    const sql = `
-      INSERT INTO classification (classification_name)
-      VALUES ($1)
-      RETURNING *
-    `
+    const sql = "INSERT INTO classification (classification_name) VALUES ($1) RETURNING *"
     return await pool.query(sql, [classification_name])
   } catch (error) {
     console.error("insertClassification error:", error)
   }
 }
 
-async function addInventory(
+/* Insert inventory */
+invModel.addInventory = async function (classification_id, inv_make, inv_model, inv_description, inv_price, inv_year, inv_miles, inv_color) {
+  try {
+    const sql = `
+      INSERT INTO inventory (classification_id, inv_make, inv_model, inv_description, inv_price, inv_year, inv_miles, inv_color)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+      RETURNING *
+    `
+    return await pool.query(sql, [classification_id, inv_make, inv_model, inv_description, inv_price, inv_year, inv_miles, inv_color])
+  } catch (error) {
+    console.error("addInventory error:", error)
+    return null
+  }
+}
+
+invModel.updateInventory = async function (
+  inv_id,
   classification_id,
   inv_make,
   inv_model,
@@ -68,17 +78,16 @@ async function addInventory(
 ) {
   try {
     const sql = `
-      INSERT INTO inventory (
-        classification_id,
-        inv_make,
-        inv_model,
-        inv_description,
-        inv_price,
-        inv_year,
-        inv_miles,
-        inv_color
-      )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+      UPDATE inventory
+      SET classification_id = $1,
+          inv_make = $2,
+          inv_model = $3,
+          inv_description = $4,
+          inv_price = $5,
+          inv_year = $6,
+          inv_miles = $7,
+          inv_color = $8
+      WHERE inv_id = $9
       RETURNING *
     `
     return await pool.query(sql, [
@@ -89,16 +98,14 @@ async function addInventory(
       inv_price,
       inv_year,
       inv_miles,
-      inv_color
+      inv_color,
+      inv_id
     ])
   } catch (error) {
-    return error.message
+    console.error("updateInventory error:", error)
+    throw error
   }
 }
-
-
-invModel.insertClassification = insertClassification
-invModel.addInventory = addInventory
 
 
 module.exports = invModel
