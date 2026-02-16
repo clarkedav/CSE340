@@ -17,6 +17,7 @@ const baseController = require("./controllers/baseController")
 const inventoryRoute = require("./routes/inventoryRoute")
 const accountRoute = require("./routes/accountRoute")
 const utilities = require("./utilities/")
+const cookieParser = require("cookie-parser")
 // Express Messages (MUST come after flash and BEFORE routes)
 const expressMessages = require("express-messages")
 const path = require("path")
@@ -29,7 +30,6 @@ const app = express()
 
 // Favicon handler to prevent repeated 404s
 app.get("/favicon.ico", (req, res) => res.status(204).end())
-
 // Session with PostgreSQL store
 app.use(
   session({
@@ -50,6 +50,12 @@ app.use(
 // Body parsing
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+
+// Cookie parser MUST come BEFORE any middleware that reads cookies
+app.use(cookieParser())
+
+// JWT middleware
+app.use(utilities.checkJWTToken)
 
 // Flash messages
 app.use(flash())
@@ -130,6 +136,7 @@ app.use(async (err, req, res, next) => {
   })
 })
 
+
 /* ***********************
  * Local Server Information
  * Values from .env (environment) file
@@ -143,3 +150,4 @@ const host = process.env.HOST || "localhost"
 app.listen(port, () => {
   console.log(`app listening on ${host}:${port}`)
 })
+

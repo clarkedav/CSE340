@@ -16,66 +16,60 @@
             <%= title %>
         </h1>
 
-    <!-- Flash messages -->
-    <% if (messages.notice) { %>
-        <div class="notice-box">
-            <% messages.notice.forEach(function(msg){ %>
-                <p>
-                    <%= msg %>
-                </p>
-                <% }) %>
-        </div>
-        <% } %>
-
-            <!-- Validation errors -->
-            <% if (errors && errors.length> 0) { %>
-                <div class="notice-box">
-                    <% errors.forEach(function(error) { %>
-                        <p>
-                            <%= error.msg %>
-                        </p>
-                        <% }) %>
-                </div>
-                <% } %>
-
-                    <!-- Login form -->
-                    <form action="/account/login" method="POST" class="login-form">
-
-                        <!-- Email -->
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" placeholder="you@example.com" required
-                            value="<%= locals.email || '' %>">
-
-                        <!-- Password -->
-                        <label for="password">Password:</label>
-                        <input type="password" id="password" name="password" placeholder="Enter your password" required
-                            pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
-
-                        <!-- Toggle password -->
-                        <div class="toggle-password">
-                            <input type="checkbox" id="showPassword" onclick="togglePassword()">
-                            <label for="showPassword">Show Password</label>
-                        </div>
-
-                        <!-- Password rules reminder -->
-                        <p class="password-rules">
-                            Password must be at least 12 characters, include 1 uppercase letter, 1 number, and 1 special
-                            character.
-                        </p>
-
-                        <button type="submit">Login</button>
-                    </form>
-
-                    <!-- Registration link -->
-                    <p class="register-link">
-                        Don't have an account? <a href="/account/register">Sign-up</a>
+        <!-- Flash messages -->
+        <% if (messages.notice) { %>
+            <div class="notice-box">
+                <% messages.notice.forEach(function(msg){ %>
+                    <p>
+                        <%= msg %>
                     </p>
+                    <% }) %>
+            </div>
+            <% } %>
+
+                <!-- Validation errors -->
+                <% if (errors && errors.length> 0) { %>
+                    <div class="notice-box">
+                        <% errors.forEach(function(error) { %>
+                            <p>
+                                <%= error.msg %>
+                            </p>
+                            <% }) %>
+                    </div>
+                    <% } %>
+
+                        <!-- Login form -->
+                        <form action="/account/login" method="POST" class="login-form">
+                            <label for="account_email">Email:</label>
+                            <input type="email" id="account_email" name="account_email" placeholder="you@example.com"
+                                required value="<%= locals.account_email || '' %>">
+
+                            <label for="account_password">Password:</label>
+                            <input type="password" id="account_password" name="account_password"
+                                placeholder="Enter your password" required
+                                pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
+
+                            <div class="toggle-password">
+                                <input type="checkbox" id="showPassword" onclick="togglePassword()">
+                                <label for="showPassword">Show Password</label>
+                            </div>
+
+                            <p class="password-rules">
+                                Password must be at least 12 characters, include 1 uppercase letter, 1 number, and 1
+                                special character.
+                            </p>
+
+                            <button type="submit">Login</button>
+                        </form>
+
+                        <p class="register-link">
+                            Don't have an account? <a href="/account/register">Sign-up</a>
+                        </p>
     </main>
 
     <script>
-        // Toggle password visibility
         function togglePassword() {
-            const pw = document.getElementById("password");
+            const pw = document.getElementById("account_password");
             pw.type = pw.type === "password" ? "text" : "password";
         }
     </script>
