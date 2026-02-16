@@ -4,8 +4,10 @@
  *******************************************/
 const pool = require("../database")
 
-/* Register new account */
-async function registerAccount(firstname, lastname, email, password) {
+/* *****************************
+*   Register new account
+* *************************** */
+async function registerAccount(account_firstname, account_lastname, account_email, account_password) {
   try {
     const sql = `
       INSERT INTO account 
@@ -13,44 +15,50 @@ async function registerAccount(firstname, lastname, email, password) {
       VALUES ($1, $2, $3, $4, 'Client')
       RETURNING *
     `
-    return await pool.query(sql, [firstname, lastname, email, password])
+    const result = await pool.query(sql, [
+      account_firstname,
+      account_lastname,
+      account_email,
+      account_password
+    ])
+    return result
   } catch (error) {
-    console.error("registerAccount error:", error)
+    console.error("Error in registerAccount model:", error)
     return null
   }
 }
 
-/* Check if email exists */
-async function checkExistingEmail(email) {
+/* **********************
+ *   Check for existing email
+ * ********************* */
+async function checkExistingEmail(account_email) {
   try {
     const sql = "SELECT * FROM account WHERE account_email = $1"
-    const result = await pool.query(sql, [email])
-    return result.rowCount
+    const email = await pool.query(sql, [account_email])
+    return email.rowCount  // returns number of rows found
   } catch (error) {
-    console.error("checkExistingEmail error:", error)
-    return 0
+    return error.message  // return error message if something goes wrong
   }
 }
 
-/* Get account by email */
-async function getAccountByEmail(email) {
+/* ********************************
+ * Get account by email
+ * ******************************** */
+async function getAccountByEmail(account_email) {
   try {
-    const sql = `
-      SELECT account_id, account_firstname, account_lastname, account_email, account_password, account_type
-      FROM account
-      WHERE account_email = $1
-    `
-    const result = await pool.query(sql, [email])
-    return result.rows[0]
+    const sql = "SELECT * FROM account WHERE account_email = $1"
+    const result = await pool.query(sql, [account_email])
+    return result.rows[0]  // returns account data or undefined
   } catch (error) {
-    console.error("getAccountByEmail error:", error)
+    console.error(error)
     return null
   }
 }
+
 
 module.exports = {
   registerAccount,
   checkExistingEmail,
-  getAccountByEmail
+   getAccountByEmail,
 }
 

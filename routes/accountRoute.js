@@ -2,46 +2,54 @@
  * Account Routes
  *******************************************/
 
+/* ***********************
+ * Require Statements
+ *************************/
 const express = require("express")
 const router = express.Router()
-const accountController = require("../controllers/accountController")
-const regValidate = require("../utilities/account-validation")
 const utilities = require("../utilities/")
+const accountController = require("../controllers/accountController")
+const validate = require("../utilities/account-validation")
+const regValidate = require("../utilities/account-validation")
 
-/* ************************
- * Deliver login view
- *************************/
-router.get("/login", utilities.handleErrors(accountController.buildLogin))
 
-/* ************************
- * Process login request
+
+/* ***********************
+ * Routes
  *************************/
-router.post(
+
+// Deliver login view
+router.get(
   "/login",
-  regValidate.loginRules(),
-  regValidate.checkLoginData,
-  utilities.handleErrors(accountController.accountLogin)
+  utilities.handleErrors(accountController.buildLogin)
 )
 
-/* ************************
- * Deliver registration view
- *************************/
-router.get("/register", utilities.handleErrors(accountController.buildRegister))
+router.get(
+  "/register",
+  utilities.handleErrors(accountController.buildRegister)
+)
 
-/* ************************
- * Process registration
- *************************/
+
+// Process the registration data
 router.post(
   "/register",
-  regValidate.registerRules(),
+  regValidate.registrationRules(),
   regValidate.checkRegData,
   utilities.handleErrors(accountController.registerAccount)
 )
 
-/* ************************
- * Account Management Default View
- * Accessible at /account/
- *************************/
-router.get("/", utilities.checkJWTToken, utilities.handleErrors(accountController.buildAccountManagement))
+router.post(
+  "/login",
+  regValidate.loginRules(),
+  regValidate.checkLoginData,
+  (req, res) => {
+    res.status(200).send("login process") // temporary
+  }
+)
+
+
 
 module.exports = router
+
+
+
