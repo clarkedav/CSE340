@@ -1,61 +1,39 @@
-// Required resources
 const express = require("express")
 const router = express.Router()
-const invCont = require("../controllers/invController")
 const utilities = require("../utilities/")
-// Validation modules (ensure these exist)
-const invValidate = require("../utilities/inventory-validation")
-const classificationValidate = require("../utilities/classification-validation")
+const accountController = require("../controllers/accountController")
+const regValidate = require("../utilities/account-validation")
 
-/* ***************************
- * Routes for Inventory Management
- * ***************************/
+// Deliver login view
+router.get("/login", utilities.handleErrors(accountController.buildLogin))
 
-// 1️ Inventory by classification
-router.get(
-  "/type/:classificationId",
-  utilities.handleErrors(invCont.buildByClassificationId)
+// Deliver registration view
+router.get("/register", utilities.handleErrors(accountController.buildRegister))
+
+// Process registration
+router.post(
+  "/register",
+  regValidate.registrationRules(),
+  regValidate.checkRegData,
+  utilities.handleErrors(accountController.registerAccount)
 )
 
-// 2️ Vehicle detail view
-router.get(
-  "/detail/:inv_id",
-  utilities.handleErrors(invCont.buildDetail)
+// Process login
+router.post(
+  "/login",
+  regValidate.loginRules(),
+  regValidate.checkLoginData,
+  utilities.handleErrors(accountController.accountLogin)
 )
 
-// 3️ Management view
+// Default account management route → requires login
 router.get(
   "/",
-  utilities.handleErrors(invCont.buildManagement)
-)
-
-// 4️ Deliver add classification form
-router.get(
-  "/add-classification",
-  utilities.handleErrors(invCont.buildAddClassification)
-)
-
-// 5️ Process add classification form
-router.post(
-  "/add-classification",
-  classificationValidate.classificationRules(),   // server-side rules
-  classificationValidate.checkClassificationData, // validation check
-  utilities.handleErrors(invCont.addClassification)
-)
-
-// 6 Deliver add inventory form
-router.get(
-  "/add-inventory",
-  utilities.handleErrors(invCont.buildAddInventory)
-)
-
-// 7️ Process add inventory form
-router.post(
-  "/add-inventory",
-  invValidate.inventoryRules(),   // server-side rules
-  invValidate.checkInventoryData, // validation check
-  utilities.handleErrors(invCont.addInventory)
+  utilities.checkJWTToken,  // checks token validity
+  utilities.checkLogin,     // ensures user is logged in
+  utilities.handleErrors(accountController.buildManagement)
 )
 
 module.exports = router
+
 

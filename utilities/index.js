@@ -1,11 +1,25 @@
 const jwt = require("jsonwebtoken")
-const invModel = require("../models/inventory-model") // make sure path is correct
+const invModel = require("../models/inventory-model") // for getNav
 require("dotenv").config()
 
 const Util = {}
 
 /* ****************************************
- * Middleware to check JWT and force login
+ * Get navigation HTML
+ **************************************** */
+Util.getNav = async function () {
+  const data = await invModel.getClassifications()
+  let list = "<ul>"
+  list += '<li><a href="/" title="Home page">Home</a></li>'
+  data.rows.forEach((row) => {
+    list += `<li><a href="/inv/type/${row.classification_id}" title="See our inventory of ${row.classification_name} vehicles">${row.classification_name}</a></li>`
+  })
+  list += "</ul>"
+  return list
+}
+
+/* ****************************************
+ * JWT Middleware: Check if token exists & valid
  **************************************** */
 Util.checkJWTToken = (req, res, next) => {
   const token = req.cookies.jwt
@@ -22,6 +36,7 @@ Util.checkJWTToken = (req, res, next) => {
       return res.redirect("/account/login")
     }
 
+    // Token valid → store account info in locals
     res.locals.accountData = accountData
     res.locals.loggedin = 1
     next()
@@ -29,25 +44,22 @@ Util.checkJWTToken = (req, res, next) => {
 }
 
 /* ****************************************
- * Wrap async functions to catch errors
+ * Authorization: General login check
+ **************************************** */
+Util.checkLogin = (req, res, next) => {
+  if (res.locals.loggedin) {
+    next()
+  } else {
+    req.flash("notice", "Please log in.")
+    return res.redirect("/account/login")
+  }
+}
+
+/* ****************************************
+ * Error Handling Wrapper for async functions
  **************************************** */
 Util.handleErrors = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next)
 }
 
-/* ****************************************
- * Build the navigation menu
- **************************************** */
-Util.getNav = async () => {
-  const data = await invModel.getClassifications()
-  let list = "<ul>"
-  list += '<li><a href="/" title="Home page">Home</a></li>'
-  data.rows.forEach((row) => {
-    list += `<li><a href="/inv/type/${row.classification_id}" title="See our inventory of ${row.classification_name} vehicles">${row.classification_name}</a></li>`
-  })
-  list += "</ul>"
-  return list
-}
-
 module.exports = Util
-

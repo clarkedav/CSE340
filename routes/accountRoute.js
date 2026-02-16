@@ -1,36 +1,16 @@
-
-
-
-/* ******************************************
- * Account Routes
- *******************************************/
-
-/* ***********************
- * Require Statements
- *************************/
 const express = require("express")
 const router = express.Router()
 const utilities = require("../utilities/")
 const accountController = require("../controllers/accountController")
 const regValidate = require("../utilities/account-validation")
 
-/* ***********************
- * Routes
- *************************/
-
 // Deliver login view
-router.get(
-  "/login",
-  utilities.handleErrors(accountController.buildLogin)
-)
+router.get("/login", utilities.handleErrors(accountController.buildLogin))
 
 // Deliver registration view
-router.get(
-  "/register",
-  utilities.handleErrors(accountController.buildRegister)
-)
+router.get("/register", utilities.handleErrors(accountController.buildRegister))
 
-// Process the registration data
+// Process registration
 router.post(
   "/register",
   regValidate.registrationRules(),
@@ -38,7 +18,7 @@ router.post(
   utilities.handleErrors(accountController.registerAccount)
 )
 
-// Process the login request
+// Process login
 router.post(
   "/login",
   regValidate.loginRules(),
@@ -46,12 +26,14 @@ router.post(
   utilities.handleErrors(accountController.accountLogin)
 )
 
-// Default account route - account management view
+// Account management view → requires JWT + login
 router.get(
   "/",
-  utilities.checkJWTToken, // middleware checks JWT
+  utilities.checkJWTToken,       // ensure token is valid
+  utilities.checkLogin,          // ensure user is logged in
   utilities.handleErrors(accountController.buildManagement)
 )
 
-module.exports = router
 
+
+module.exports = router
