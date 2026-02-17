@@ -1,49 +1,56 @@
-<% if (flash.notice) { %>
-    <div class="notice-box">
-        <% flash.notice.forEach(function(msg) { %>
-            <p>
-                <%= msg %>
-            </p>
-            <% }) %>
+<nav class="main-nav">
+    <%- nav %>
+</nav>
+
+<% if (messages.notice && messages.notice.length> 0) { %>
+    <div id="flashMessage">
+        <div class="notice-box">
+            <% messages.notice.forEach(function(msg) { %>
+                <p>
+                    <%= msg %>
+                </p>
+                <% }) %>
+        </div>
     </div>
     <% } %>
 
-        <% if (flash.error) { %>
-            <div class="error-box">
-                <% flash.error.forEach(function(msg) { %>
-                    <p>
-                        <%= msg %>
-                    </p>
-                    <% }) %>
+        <% if (messages.error && messages.error.length> 0) { %>
+            <div id="flashMessage">
+                <div class="error-box">
+                    <% messages.error.forEach(function(msg) { %>
+                        <p>
+                            <%= msg %>
+                        </p>
+                        <% }) %>
+                </div>
             </div>
             <% } %>
 
+                <main class="inventory-management">
 
-        <main class="inventory-management">
+                    <div class="task-links">
+                        <a href="/inv/add-classification">Add Classification</a>
+                        <a href="/inv/add-inventory">Add Inventory</a>
+                    </div>
 
-            <div class="task-links">
-                <a href="/inv/add-classification">Add Classification</a>
-                <a href="/inv/add-inventory">Add Inventory</a>
-            </div>
+                    <h2>Manage Inventory</h2>
+                    <p>Select a classification from the list below to see the vehicles belonging to that classification.
+                    </p>
 
-            <h2>Manage Inventory</h2>
-            <p>Select a classification from the list below to see the vehicles belonging to that classification.</p>
+                    <%- classificationSelect %>
 
-            <%- classificationSelect %>
+                        <table id="inventoryDisplay"></table>
 
-                <table id="inventoryDisplay"></table>
+                        <noscript>JavaScript must be enabled to use this page.</noscript>
 
-                <noscript>JavaScript must be enabled to use this page.</noscript>
+                </main>
 
-        </main>
-
-        <script src="/js/inventory.js"></script>
-        <script>
-            // Remove flash message after 5 seconds
-            const flash = document.getElementById("flashMessage");
-            if (flash) {
-                setTimeout(() => {
-                    flash.style.display = "none";
-                }, 5000); // 5000ms = 5 seconds
-            }
-        </script>
+                <script src="/js/inventory.js"></script>
+                <script>
+                    const flash = document.getElementById("flashMessage");
+                    if (flash) {
+                        setTimeout(() => {
+                            flash.style.display = "none";
+                        }, 5000);
+                    }
+                </script>

@@ -66,7 +66,6 @@ ul {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0.75rem 1rem;
-
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -210,7 +209,6 @@ main h1 {
   max-width: 1200px;
   margin: 0 auto 3rem;
   padding: 0;
-
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.75rem;
@@ -252,7 +250,6 @@ main h1 {
  * DESKTOP LAYOUT
  *************************************************/
 @media screen and (min-width: 768px) {
-
   .hero {
     flex-direction: row;
     align-items: flex-start;
@@ -276,7 +273,6 @@ main h1 {
     gap: 2rem;
   }
 }
-
 
 /* ===============================
    LOGIN VIEW
@@ -392,6 +388,7 @@ main h1 {
   margin: 0;
   font-weight: normal;
 }
+
 /************** 1`
 ***********************************
  * ACCOUNT FORMS (LOGIN & REGISTER)
@@ -626,7 +623,6 @@ input:required:valid {
   }
 }
 
-
 /* Page Headings */
 h1 {
   text-align: center;
@@ -692,6 +688,7 @@ form textarea {
   min-height: 100px;
   resize: vertical;
 }
+
 form button {
   margin-top: 1.5rem;
   padding: 0.75rem;
@@ -712,13 +709,88 @@ form button:hover {
 form button:active {
   transform: scale(0.98);
 }
+
 @media (max-width: 600px) {
   form {
     margin: 1rem;
     padding: 1.5rem;
   }
 }
-/* looged in */
+
+/* logged in */
 .logged-in-text {
   color: #0ea5e9;
+}
+
+/* ===============================
+   ERROR / VALIDATION MESSAGES
+================================ */
+
+/* Red error box — mirrors .flash-message and .notice-box pattern,
+   used when server-side validation fails on any inventory form */
+.error-box {
+  max-width: 600px;
+  margin: 1rem auto;
+  padding: 1rem;
+  background-color: #fee2e2;
+  border-left: 6px solid #991b1b;
+  border-radius: 6px;
+}
+
+.error-box p {
+  margin: 0.25rem 0;
+  color: #991b1b;
+  font-weight: 500;
+}
+
+/* Inline field-level error — displayed directly below the offending input */
+.field-error {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #991b1b;
+  font-weight: 500;
+}
+
+/* Red border + light tint on inputs that failed server-side validation */
+form input.input-error,
+form textarea.input-error,
+form select.input-error {
+  border-color: #991b1b;
+  background-color: #fff5f5;
+  box-shadow: 0 0 4px rgba(153, 27, 27, 0.3);
+}
+
+/* ===============================
+   Delete Confirmation Page
+================================ */
+
+.delete-warning {
+  max-width: 600px;
+  margin: 1rem auto 1.5rem;
+  padding: 1rem 1.25rem;
+  background-color: #fff3cd;
+  border-left: 6px solid #e65100;
+  border-radius: 6px;
+  color: #7a3a00;
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.delete-btn {
+  background-color: #dc2626 !important;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 1.5rem;
+}
+
+.delete-btn:hover {
+  background-color: #991b1b !important;
 }

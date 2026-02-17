@@ -1,0 +1,20 @@
+<h1>Confirm Delete</h1>
+
+<p>Are you sure you want to delete the following inventory item?</p>
+
+<ul>
+    <li>Make: <%= item.inv_make %>
+    </li>
+    <li>Model: <%= item.inv_model %>
+    </li>
+    <li>Year: <%= item.inv_year %>
+    </li>
+    <li>Price: $<%= item.inv_price %>
+    </li>
+</ul>
+
+<form action="/inv/delete" method="post">
+    <input type="hidden" name="inv_id" value="<%= item.inv_id %>">
+    <button type="submit">Yes, Delete</button>
+    <a href="/inv/">Cancel</a>
+</form>

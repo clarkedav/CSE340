@@ -3,86 +3,81 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
         <%= title %>
     </title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 
 <body>
-    <main class="form-container">
+    <main class="login-container">
         <h1>
             <%= title %>
         </h1>
 
-    <!-- Flash messages -->
-    <% if (messages.notice) { %>
-        <div class="notice-box">
-            <% messages.notice.forEach(function(msg){ %>
-                <p>
-                    <%= msg %>
+        <!-- Flash messages -->
+        <% if (messages && messages.notice && messages.notice.length> 0) { %>
+            <div class="notice-box">
+                <% messages.notice.forEach(function(msg) { %>
+                    <p>
+                        <%= msg %>
+                    </p>
+                    <% }) %>
+            </div>
+            <% } %>
 
+                <!-- Validation errors -->
+                <% if (errors && errors.length> 0) { %>
+                    <div class="error-box">
+                        <% errors.forEach(function(error) { %>
+                            <p>
+                                <%= error.msg %>
+                            </p>
+                            <% }) %>
+                    </div>
+                    <% } %>
 
+                        <!-- Registration Form -->
+                        <form action="/account/register" method="post" class="account-form">
 
+                            <!-- First Name -->
+                            <label for="account_firstname">First Name</label>
+                            <input type="text" name="account_firstname" id="accountFirstname" required
+                                value="<%= locals.account_firstname || '' %>">
 
-6                    <% }) %>
-        </div>
-        <% } %>
+                            <!-- Last Name -->
+                            <label for="account_lastname">Last Name</label>
+                            <input type="text" name="account_lastname" id="accountLastname" required
+                                value="<%= locals.account_lastname || '' %>">
 
-            <!-- Validation errors -->
-            <% if (errors && errors.length> 0) { %>
-                <div class="notice-box">
-                    <% errors.forEach(function(error) { %>
-                        <p>
-                            <%= error.msg %>
-                        </p>
-                        <% }) %>
-                </div>
-                <% } %>
+                            <!-- Email -->
+                            <label for="account_email">Email Address</label>
+                            <input type="email" name="account_email" id="accountEmail" required
+                                value="<%= locals.account_email || '' %>">
 
-                    <!-- Registration Form -->
-                    <form action="/account/register" method="post" class="account-form">
+                            <!-- Password -->
+                            <label for="account_password">Password</label>
+                            <input type="password" id="account_password" name="account_password" required
+                                pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
 
-                        <!-- First Name -->
-                        <label for="account_firstname">First Name</label>
-                        <input type="text" name="account_firstname" id="accountFirstname" required
-                            value="<%= locals.account_firstname || '' %>">
+                            <!-- Toggle password -->
+                            <div class="toggle-password">
+                                <input type="checkbox" id="showPassword" onclick="togglePassword()">
+                                <label for="showPassword">Show Password</label>
+                            </div>
 
-                        <!-- Last Name -->
-                        <label for="account_lastname">Last Name</label>
-                        <input type="text" name="account_lastname" id="accountLastname" required
-                            value="<%= locals.account_lastname || '' %>">
+                            <!-- Password requirements -->
+                            <p class="password-rules">
+                                Password must be at least 12 characters and include: a capital letter, a number, and a
+                                special character.
+                            </p>
 
-                        <!-- Email -->
-                        <label for="account_email">Email Address</label>
-                        <input type="email" name="account_email" id="accountEmail" required
-                            value="<%= locals.account_email || '' %>">
-
-                        <!-- Password -->
-                        <label for="account_password">Password</label>
-                        <input type="password" id="account_password" name="account_password" required
-                            pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
-
-                        <!-- Toggle password -->
-                        <div class="toggle-password">
-                            <input type="checkbox" id="showPassword" onclick="togglePassword()">
-                            <label for="showPassword">Show Password</label>
-                        </div>
-
-
-
-                        <!-- Password requirements -->
-                        <p class="password-rules">
-                            Password must be at least 12 characters and include: a capital letter, a number, and a
-                            special character.
-                        </p>
-
-                        <button type="submit">Register</button>
-                    </form>
+                            <button type="submit">Register</button>
+                        </form>
     </main>
 
     <script>
-        // Toggle password visibility
         function togglePassword() {
             const pw = document.getElementById("account_password");
             pw.type = pw.type === "password" ? "text" : "password";

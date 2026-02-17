@@ -1,6 +1,5 @@
 /* ******************************************
  * Account Controller
- * Handles delivery and processing of account views
  *******************************************/
 const bcrypt = require("bcryptjs")
 const utilities = require("../utilities")
@@ -16,7 +15,8 @@ async function buildLogin(req, res, next) {
             title: "Login",
             nav,
             errors: null,
-            account_email: ""
+            account_email: "",
+            messages: req.flash()
         })
     } catch (error) {
         next(error)
@@ -33,7 +33,8 @@ async function buildRegister(req, res, next) {
             errors: null,
             account_firstname: "",
             account_lastname: "",
-            account_email: ""
+            account_email: "",
+            messages: req.flash()
         })
     } catch (error) {
         next(error)
@@ -49,7 +50,15 @@ async function registerAccount(req, res) {
         hashedPassword = await bcrypt.hashSync(account_password, 10)
     } catch (error) {
         req.flash("notice", "Error processing registration")
-        return res.render("account/register", { title: "Registration", nav, errors: null, account_firstname, account_lastname, account_email })
+        return res.render("account/register", {
+            title: "Registration",
+            nav,
+            errors: null,
+            account_firstname,
+            account_lastname,
+            account_email,
+            messages: req.flash()
+        })
     }
 
     const emailExists = await accountModel.checkExistingEmail(account_email)
@@ -58,13 +67,27 @@ async function registerAccount(req, res) {
         return res.redirect("/account/register")
     }
 
-    const regResult = await accountModel.registerAccount(account_firstname, account_lastname, account_email, hashedPassword)
+    const regResult = await accountModel.registerAccount(
+        account_firstname,
+        account_lastname,
+        account_email,
+        hashedPassword
+    )
+
     if (regResult && regResult.rowCount > 0) {
         req.flash("notice", `Congratulations, you're registered ${account_firstname}. Please log in.`)
         return res.redirect("/account/login")
     } else {
         req.flash("notice", "Registration failed.")
-        return res.render("account/register", { title: "Registration", nav, errors: null, account_firstname, account_lastname, account_email })
+        return res.render("account/register", {
+            title: "Registration",
+            nav,
+            errors: null,
+            account_firstname,
+            account_lastname,
+            account_email,
+            messages: req.flash()
+        })
     }
 }
 
@@ -76,13 +99,25 @@ async function accountLogin(req, res) {
     const accountData = await accountModel.getAccountByEmail(account_email)
     if (!accountData) {
         req.flash("notice", "Please check your credentials and try again.")
-        return res.status(400).render("account/login", { title: "Login", nav, errors: null, account_email })
+        return res.status(400).render("account/login", {
+            title: "Login",
+            nav,
+            errors: null,
+            account_email,
+            messages: req.flash()
+        })
     }
 
     const passwordMatch = await bcrypt.compare(account_password, accountData.account_password)
     if (!passwordMatch) {
         req.flash("notice", "Please check your credentials and try again.")
-        return res.status(400).render("account/login", { title: "Login", nav, errors: null, account_email })
+        return res.status(400).render("account/login", {
+            title: "Login",
+            nav,
+            errors: null,
+            account_email,
+            messages: req.flash()
+        })
     }
 
     delete accountData.account_password
@@ -101,9 +136,11 @@ async function accountLogin(req, res) {
 // Account management view
 async function buildManagement(req, res, next) {
     const nav = await utilities.getNav()
-  res.render("account/management", {
-    title: "Account Management", nav, 
-    errors: []
+    res.render("account/management", {
+        title: "Account Management",
+        nav,
+        errors: null,
+        messages: req.flash()
     })
 }
 
@@ -114,4 +151,3 @@ module.exports = {
     accountLogin,
     buildManagement
 }
-

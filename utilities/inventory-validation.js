@@ -40,6 +40,9 @@ invValidate.inventoryRules = () => {
       .trim()
       .isLength({ min: 1 })
       .withMessage("Color is required"),
+    // Note: inv_image and inv_thumbnail are not validated here because they are
+    // hidden fields with server-side defaults — they are not user-facing inputs
+    // and will always have a fallback value applied in the controller.
   ]
 }
 
@@ -54,18 +57,15 @@ invValidate.checkInventoryData = async (req, res, next) => {
       const nav = await utilities.getNav()
       const classificationList = await utilities.buildClassificationList(req.body.classification_id)
 
-      req.flash(
-        "error",
-        errors.array().map(err => err.msg).join(", ")
-      )
-
+      // Fix #3: Pass errors directly to the template instead of using req.flash
+      // and then immediately reading it in the same request cycle
       return res.render("inventory/add-inventory", {
         title: "Add New Inventory",
         nav,
         classificationList,
         errors: errors.array(),
         sticky,
-        messages: req.flash(),
+        messages: { error: errors.array().map(err => err.msg) },
       })
     } catch (error) {
       return next(error)
@@ -86,18 +86,15 @@ invValidate.checkUpdateData = async (req, res, next) => {
       const nav = await utilities.getNav()
       const classificationList = await utilities.buildClassificationList(req.body.classification_id)
 
-      req.flash(
-        "error",
-        errors.array().map(err => err.msg).join(", ")
-      )
-
+      // Fix #3: Pass errors directly to the template instead of using req.flash
+      // and then immediately reading it in the same request cycle
       return res.render("inventory/edit-inventory", {
         title: `Edit ${sticky.inv_make || ""} ${sticky.inv_model || ""}`,
         nav,
         classificationSelect: classificationList,
         errors: errors.array(),
         sticky,
-        messages: req.flash(),
+        messages: { error: errors.array().map(err => err.msg) },
       })
     } catch (error) {
       return next(error)
@@ -107,4 +104,3 @@ invValidate.checkUpdateData = async (req, res, next) => {
 }
 
 module.exports = invValidate
-

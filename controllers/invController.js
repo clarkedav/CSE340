@@ -11,6 +11,7 @@ invCont.buildAddClassification = async function (req, res) {
   res.render("inventory/add-classification", {
     title: "Add New Classification",
     nav,
+    errors: null,
     sticky: null,
     messages: req.flash()
   })
@@ -25,6 +26,7 @@ invCont.buildAddInventory = async function (req, res) {
   res.render("inventory/add-inventory", {
     title: "Add New Inventory",
     nav,
+    errors: null,
     classificationList,
     sticky: null,
     messages: req.flash()
@@ -41,6 +43,7 @@ invCont.buildManagement = async function (req, res, next) {
     res.render("inventory/management", {
       title: "Inventory Management",
       nav,
+      errors: null,
       classificationSelect,
       messages: req.flash()
     })
@@ -76,12 +79,12 @@ invCont.editInventoryView = async function (req, res, next) {
       return res.redirect("/inv/")
     }
 
-    const classificationSelect =
-      await utilities.buildClassificationList(itemData.classification_id)
+    const classificationSelect = await utilities.buildClassificationList(itemData.classification_id)
 
     res.render("inventory/edit-inventory", {
       title: `Edit ${itemData.inv_make} ${itemData.inv_model}`,
       nav,
+      errors: null,
       classificationSelect,
       sticky: itemData,
       messages: req.flash()
@@ -110,38 +113,28 @@ invCont.updateInventory = async function (req, res, next) {
       classification_id
     } = req.body
 
-    // Default images if missing
     inv_image = inv_image || "/images/no-image.png"
     inv_thumbnail = inv_thumbnail || "/images/no-image.png"
 
-    // Convert numeric fields safely
     const invIdInt = parseInt(inv_id)
     const classificationIdInt = parseInt(classification_id)
     const yearInt = parseInt(inv_year)
     const milesInt = parseInt(inv_miles)
     const priceFloat = parseFloat(inv_price)
 
-    // Validate numeric input
-    if (
-      isNaN(invIdInt) ||
-      isNaN(classificationIdInt) ||
-      isNaN(yearInt) ||
-      isNaN(milesInt) ||
-      isNaN(priceFloat)
-    ) {
-      req.flash("notice", "Invalid numeric input detected.")
+    if (isNaN(invIdInt) || isNaN(classificationIdInt) || isNaN(yearInt) || isNaN(milesInt) || isNaN(priceFloat)) {
       const nav = await utilities.getNav()
       const classificationSelect = await utilities.buildClassificationList(classification_id)
       return res.status(400).render("inventory/edit-inventory", {
         title: `Edit ${inv_make || ""} ${inv_model || ""}`,
         nav,
+        errors: null,
         classificationSelect,
         sticky: req.body,
-        messages: req.flash()
+        messages: { notice: ["Invalid numeric input detected."] }
       })
     }
 
-    // Call model to update inventory
     const updatedItem = await invModel.updateInventory(
       invIdInt,
       inv_make,
@@ -215,6 +208,75 @@ invCont.addInventory = async function (req, res, next) {
 }
 
 /* ***************************
- * Export Controller
+ * Delete Inventory View
  ***************************/
+invCont.deleteInventoryView = async function (req, res, next) {
+  try {
+    const inv_id = parseInt(req.params.inv_id)
+    const nav = await utilities.getNav()
+    const itemData = await invModel.getInventoryById(inv_id)
+
+    if (!itemData) {
+      req.flash("notice", "Inventory item not found.")
+      return res.redirect("/inv/")
+    }
+
+    res.render("inventory/delete-confirm", {
+      title: `Delete ${itemData.inv_make} ${itemData.inv_model}`,
+      nav,
+      errors: null,
+      sticky: itemData,
+      messages: req.flash()
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/* ***************************
+ * Build Delete Confirmation View
+ ***************************/
+invCont.buildDeleteView = async function (req, res, next) {
+  try {
+    const inv_id = parseInt(req.params.inv_id)
+    const nav = await utilities.getNav()
+    const itemData = await invModel.getInventoryById(inv_id)
+
+    if (!itemData) {
+      req.flash("notice", "Inventory item not found.")
+      return res.redirect("/inv/")
+    }
+
+    res.render("inventory/delete-confirm", {
+      title: `Delete ${itemData.inv_make} ${itemData.inv_model}`,
+      nav,
+      errors: null,
+      sticky: itemData,
+      messages: req.flash()
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/* ***************************
+ * Process Inventory Delete
+ ***************************/
+invCont.deleteInventory = async function (req, res, next) {
+  try {
+    const inv_id = parseInt(req.body.inv_id)
+    const deleteResult = await invModel.deleteInventoryById(inv_id)
+
+    if (deleteResult) {
+      req.flash("notice", "Inventory item deleted successfully.")
+      return res.redirect("/inv/")
+    } else {
+      req.flash("error", "Sorry, the delete failed.")
+      return res.redirect(`/inv/delete/${inv_id}`)
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = invCont

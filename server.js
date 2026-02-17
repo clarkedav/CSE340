@@ -18,7 +18,6 @@ const inventoryRoute = require("./routes/inventoryRoute")
 const accountRoute = require("./routes/accountRoute")
 const utilities = require("./utilities/")
 const cookieParser = require("cookie-parser")
-const path = require("path")
 
 const app = express()
 
@@ -48,24 +47,13 @@ app.use(
     saveUninitialized: false,
     name: "sessionId",
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
+      maxAge: 1000 * 60 * 60 * 24,
     },
   })
 )
 
 // Flash messages
 app.use(flash())
-
-// Make flash messages available in templates
-app.use((req, res, next) => {
-  res.locals.flash = {}
-  const types = ["notice", "error"]
-  types.forEach((type) => {
-    const msgs = req.flash(type)
-    if (msgs.length > 0) res.locals.flash[type] = msgs
-  })
-  next()
-})
 
 // Static Files
 app.use(express.static("public"))
@@ -80,27 +68,16 @@ app.set("layout", "./layouts/layout")
 /* ***********************
  * Routes
  *************************/
-
-// Account routes (login/register etc.)
 app.use("/account", accountRoute)
-
-// Public routes
 app.get("/", utilities.handleErrors(baseController.buildHome))
-
-// Protected routes (apply JWT only here)
 app.use("/inv", utilities.checkJWTToken, inventoryRoute)
-
-// Intentional error route
 app.get("/trigger-error", utilities.handleErrors(baseController.triggerError))
 
 /* ***********************
  * 404 handler
  *************************/
 app.use(async (req, res, next) => {
-  next({
-    status: 404,
-    message: "Sorry, we appear to have lost that page.",
-  })
+  next({ status: 404, message: "Sorry, we appear to have lost that page." })
 })
 
 /* ***********************
