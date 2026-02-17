@@ -1,19 +1,49 @@
-<main class="inventory-management">
-
-    <div class="task-links">
-        <a href="/inv/add-classification">Add Classification</a>
-        <a href="/inv/add-inventory">Add Inventory</a>
+<% if (flash.notice) { %>
+    <div class="notice-box">
+        <% flash.notice.forEach(function(msg) { %>
+            <p>
+                <%= msg %>
+            </p>
+            <% }) %>
     </div>
+    <% } %>
 
-    <h2>Manage Inventory</h2>
-    <p>Select a classification from the list below to see the vehicles belonging to that classification.</p>
+        <% if (flash.error) { %>
+            <div class="error-box">
+                <% flash.error.forEach(function(msg) { %>
+                    <p>
+                        <%= msg %>
+                    </p>
+                    <% }) %>
+            </div>
+            <% } %>
 
-    <%- classificationSelect %>
 
-        <table id="inventoryDisplay"></table>
+        <main class="inventory-management">
 
-        <noscript>JavaScript must be enabled to use this page.</noscript>
+            <div class="task-links">
+                <a href="/inv/add-classification">Add Classification</a>
+                <a href="/inv/add-inventory">Add Inventory</a>
+            </div>
 
-</main>
+            <h2>Manage Inventory</h2>
+            <p>Select a classification from the list below to see the vehicles belonging to that classification.</p>
 
-<script src="/js/inventory.js"></script>
+            <%- classificationSelect %>
+
+                <table id="inventoryDisplay"></table>
+
+                <noscript>JavaScript must be enabled to use this page.</noscript>
+
+        </main>
+
+        <script src="/js/inventory.js"></script>
+        <script>
+            // Remove flash message after 5 seconds
+            const flash = document.getElementById("flashMessage");
+            if (flash) {
+                setTimeout(() => {
+                    flash.style.display = "none";
+                }, 5000); // 5000ms = 5 seconds
+            }
+        </script>

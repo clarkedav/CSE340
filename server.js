@@ -18,7 +18,6 @@ const inventoryRoute = require("./routes/inventoryRoute")
 const accountRoute = require("./routes/accountRoute")
 const utilities = require("./utilities/")
 const cookieParser = require("cookie-parser")
-const expressMessages = require("express-messages")
 const path = require("path")
 
 const app = express()
@@ -59,7 +58,12 @@ app.use(flash())
 
 // Make flash messages available in templates
 app.use((req, res, next) => {
-  res.locals.messages = req.flash()
+  res.locals.flash = {}
+  const types = ["notice", "error"]
+  types.forEach((type) => {
+    const msgs = req.flash(type)
+    if (msgs.length > 0) res.locals.flash[type] = msgs
+  })
   next()
 })
 
@@ -112,7 +116,10 @@ app.use(async (err, req, res, next) => {
 
   console.error(`Error at: "${req.originalUrl}": ${err.message}`)
 
-  const message = err.status === 404 ? err.message : "Oh no! There was a crash. Maybe try a different route?"
+  const message =
+    err.status === 404
+      ? err.message
+      : "Oh no! There was a crash. Maybe try a different route?"
 
   res.status(err.status || 500).render("errors/error", {
     title: err.status || "Server Error",
@@ -130,5 +137,3 @@ const host = process.env.HOST || "localhost"
 app.listen(port, () => {
   console.log(`App listening on ${host}:${port}`)
 })
-
-

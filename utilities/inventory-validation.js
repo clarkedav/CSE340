@@ -1,5 +1,5 @@
 const { body, validationResult } = require("express-validator")
-const utilities = require("./index") // import utilities to access buildClassificationList
+const utilities = require("./index") // access buildClassificationList
 
 const invValidate = {}
 
@@ -44,26 +44,21 @@ invValidate.inventoryRules = () => {
 }
 
 /* *******************************
- * Validation check middleware
+ * Validation middleware for adding inventory
  * *******************************/
 invValidate.checkInventoryData = async (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
     try {
-      // Keep the entered values for sticky form
       const sticky = { ...req.body }
-
-      // Rebuild navigation and classification select list
       const nav = await utilities.getNav()
       const classificationList = await utilities.buildClassificationList(req.body.classification_id)
 
-      // Add error messages to flash
       req.flash(
         "error",
         errors.array().map(err => err.msg).join(", ")
       )
 
-      // Re-render form with sticky values, classification list, nav, and errors
       return res.render("inventory/add-inventory", {
         title: "Add New Inventory",
         nav,
@@ -79,4 +74,37 @@ invValidate.checkInventoryData = async (req, res, next) => {
   next()
 }
 
+/* *******************************
+ * Validation middleware for updating inventory
+ * Errors go back to edit-inventory view
+ * *******************************/
+invValidate.checkUpdateData = async (req, res, next) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    try {
+      const sticky = { ...req.body } // include inv_id
+      const nav = await utilities.getNav()
+      const classificationList = await utilities.buildClassificationList(req.body.classification_id)
+
+      req.flash(
+        "error",
+        errors.array().map(err => err.msg).join(", ")
+      )
+
+      return res.render("inventory/edit-inventory", {
+        title: `Edit ${sticky.inv_make || ""} ${sticky.inv_model || ""}`,
+        nav,
+        classificationSelect: classificationList,
+        errors: errors.array(),
+        sticky,
+        messages: req.flash(),
+      })
+    } catch (error) {
+      return next(error)
+    }
+  }
+  next()
+}
+
 module.exports = invValidate
+

@@ -1,9 +1,6 @@
-<h1>Edit Inventory Item</h1>
-
-<!-- Flash / notice messages -->
-<% if (messages.notice) { %>
+<% if (flash.notice) { %>
     <div class="notice-box">
-        <% messages.notice.forEach(function(msg) { %>
+        <% flash.notice.forEach(function(msg) { %>
             <p>
                 <%= msg %>
             </p>
@@ -11,47 +8,63 @@
     </div>
     <% } %>
 
-        <form action="/inv/update" method="post" novalidate>
+        <% if (flash.error) { %>
+            <div class="error-box">
+                <% flash.error.forEach(function(msg) { %>
+                    <p>
+                        <%= msg %>
+                    </p>
+                    <% }) %>
+            </div>
+            <% } %>
 
-            <!-- Hidden input to pass inventory ID -->
-            <input type="hidden" name="inv_id" value="<%= sticky ? sticky.inv_id : '' %>">
 
-            <!-- Classification Select List -->
-            <label for="classificationList">Classification</label>
-            <%- classificationSelect %>
+                <form id="updateForm" action="/inv/update" method="post" novalidate>
 
-                <!-- Make -->
-                <label for="invMake">Make</label>
-                <input type="text" id="invMake" name="inv_make" value="<%= sticky ? sticky.inv_make : '' %>" required>
+                    <!-- Hidden input to pass inventory ID -->
+                    <input type="hidden" name="inv_id" value="<%= sticky ? sticky.inv_id : '' %>">
 
-                <!-- Model -->
-                <label for="invModel">Model</label>
-                <input type="text" id="invModel" name="inv_model" value="<%= sticky ? sticky.inv_model : '' %>"
-                    required>
+                    <!-- Classification Select List -->
+                    <label for="classificationList">Classification</label>
+                    <%- classificationSelect %>
 
-                <!-- Description -->
-                <label for="invDescription">Description</label>
-                <textarea id="invDescription" name="inv_description"
-                    required><%= sticky ? sticky.inv_description : '' %></textarea>
+                        <!-- Make -->
+                        <label for="invMake">Make</label>
+                        <input type="text" id="invMake" name="inv_make" value="<%= sticky ? sticky.inv_make : '' %>"
+                            required>
 
-                <!-- Price -->
-                <label for="invPrice">Price</label>
-                <input type="number" id="invPrice" name="inv_price" step="0.01"
-                    value="<%= sticky ? sticky.inv_price : '' %>" required>
+                        <!-- Model -->
+                        <label for="invModel">Model</label>
+                        <input type="text" id="invModel" name="inv_model" value="<%= sticky ? sticky.inv_model : '' %>"
+                            required>
 
-                <!-- Year -->
-                <label for="invYear">Year</label>
-                <input type="number" id="invYear" name="inv_year" value="<%= sticky ? sticky.inv_year : '' %>" required>
+                        <!-- Description -->
+                        <label for="invDescription">Description</label>
+                        <textarea id="invDescription" name="inv_description"
+                            required><%= sticky ? sticky.inv_description : '' %></textarea>
 
-                <!-- Miles -->
-                <label for="invMiles">Mileage</label>
-                <input type="number" id="invMiles" name="inv_miles" value="<%= sticky ? sticky.inv_miles : '' %>"
-                    required>
+                        <!-- Price -->
+                        <label for="invPrice">Price</label>
+                        <input type="number" id="invPrice" name="inv_price" step="0.01"
+                            value="<%= sticky ? sticky.inv_price : '' %>" required>
 
-                <!-- Color -->
-                <label for="invColor">Color</label>
-                <input type="text" id="invColor" name="inv_color" value="<%= sticky ? sticky.inv_color : '' %>"
-                    required>
+                        <!-- Year -->
+                        <label for="invYear">Year</label>
+                        <input type="number" id="invYear" name="inv_year" value="<%= sticky ? sticky.inv_year : '' %>"
+                            required>
 
-                <button type="submit">Update Vehicle</button>
-        </form>
+                        <!-- Miles -->
+                        <label for="invMiles">Mileage</label>
+                        <input type="number" id="invMiles" name="inv_miles"
+                            value="<%= sticky ? sticky.inv_miles : '' %>" required>
+
+                        <!-- Color -->
+                        <label for="invColor">Color</label>
+                        <input type="text" id="invColor" name="inv_color" value="<%= sticky ? sticky.inv_color : '' %>"
+                            required>
+
+                        <button type="submit" disabled>Update Vehicle</button>
+                </form>
+
+                <!-- Link the JS file that enables the button on form changes -->
+                <script src="/js/inv-update.js"></script>

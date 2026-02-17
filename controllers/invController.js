@@ -11,7 +11,8 @@ invCont.buildAddClassification = async function (req, res) {
   res.render("inventory/add-classification", {
     title: "Add New Classification",
     nav,
-    sticky: null
+    sticky: null,
+    messages: req.flash()
   })
 }
 
@@ -25,7 +26,8 @@ invCont.buildAddInventory = async function (req, res) {
     title: "Add New Inventory",
     nav,
     classificationList,
-    sticky: null
+    sticky: null,
+    messages: req.flash()
   })
 }
 
@@ -40,7 +42,7 @@ invCont.buildManagement = async function (req, res, next) {
       title: "Inventory Management",
       nav,
       classificationSelect,
-      messages: req.flash(),
+      messages: req.flash()
     })
   } catch (error) {
     next(error)
@@ -54,11 +56,7 @@ invCont.getInventoryJSON = async function (req, res, next) {
   try {
     const classification_id = parseInt(req.params.classification_id)
     const invData = await invModel.getInventoryByClassificationId(classification_id)
-    if (invData.rows && invData.rows.length > 0) {
-      res.json(invData.rows)
-    } else {
-      res.json([]) // return empty array if no inventory
-    }
+    res.json(invData.rows || [])
   } catch (error) {
     next(error)
   }
@@ -74,18 +72,15 @@ invCont.editInventoryView = async function (req, res, next) {
     const itemData = await invModel.getInventoryById(inv_id)
 
     if (!itemData) {
-      return res.status(404).render("errors/error", {
-        title: "Inventory Not Found",
-        message: "Sorry, the requested inventory item does not exist.",
-        nav,
-      })
+      req.flash("notice", "Inventory item not found.")
+      return res.redirect("/inv/")
     }
 
-    const classificationSelect = await utilities.buildClassificationList(itemData.classification_id)
-    const itemName = `${itemData.inv_make} ${itemData.inv_model}`
+    const classificationSelect =
+      await utilities.buildClassificationList(itemData.classification_id)
 
     res.render("inventory/edit-inventory", {
-      title: "Edit " + itemName,
+      title: `Edit ${itemData.inv_make} ${itemData.inv_model}`,
       nav,
       classificationSelect,
       sticky: itemData,
@@ -97,46 +92,129 @@ invCont.editInventoryView = async function (req, res, next) {
 }
 
 /* ***************************
- *  Update inventory item
- * ***************************/
+ * Update Inventory
+ ***************************/
 invCont.updateInventory = async function (req, res, next) {
   try {
-    const {
+    let {
       inv_id,
-      classification_id,
       inv_make,
       inv_model,
       inv_description,
+      inv_image,
+      inv_thumbnail,
       inv_price,
       inv_year,
       inv_miles,
-      inv_color
+      inv_color,
+      classification_id
     } = req.body
 
-    // Call model to update the inventory item
-    const result = await invModel.updateInventory(
-      inv_id,
-      classification_id,
+    // Default images if missing
+    inv_image = inv_image || "/images/no-image.png"
+    inv_thumbnail = inv_thumbnail || "/images/no-image.png"
+
+    // Convert numeric fields safely
+    const invIdInt = parseInt(inv_id)
+    const classificationIdInt = parseInt(classification_id)
+    const yearInt = parseInt(inv_year)
+    const milesInt = parseInt(inv_miles)
+    const priceFloat = parseFloat(inv_price)
+
+    // Validate numeric input
+    if (
+      isNaN(invIdInt) ||
+      isNaN(classificationIdInt) ||
+      isNaN(yearInt) ||
+      isNaN(milesInt) ||
+      isNaN(priceFloat)
+    ) {
+      req.flash("notice", "Invalid numeric input detected.")
+      const nav = await utilities.getNav()
+      const classificationSelect = await utilities.buildClassificationList(classification_id)
+      return res.status(400).render("inventory/edit-inventory", {
+        title: `Edit ${inv_make || ""} ${inv_model || ""}`,
+        nav,
+        classificationSelect,
+        sticky: req.body,
+        messages: req.flash()
+      })
+    }
+
+    // Call model to update inventory
+    const updatedItem = await invModel.updateInventory(
+      invIdInt,
       inv_make,
       inv_model,
       inv_description,
-      inv_price,
-      inv_year,
-      inv_miles,
-      inv_color
+      inv_image,
+      inv_thumbnail,
+      priceFloat,
+      yearInt,
+      milesInt,
+      inv_color,
+      classificationIdInt
     )
 
-    if (result.rowCount === 1) {
-      req.flash("notice", [`${inv_make} ${inv_model} updated successfully.`])
-      return res.redirect("/inv")
+    if (updatedItem) {
+      req.flash("notice", `${updatedItem.inv_make} ${updatedItem.inv_model} updated successfully.`)
+      return res.redirect("/inv/")
     } else {
-      throw new Error("Inventory update failed")
+      req.flash("notice", "Sorry, the update failed.")
+      return res.redirect(`/inv/edit/${invIdInt}`)
     }
   } catch (error) {
     next(error)
   }
 }
 
+/* ***************************
+ * Process Add Inventory
+ ***************************/
+invCont.addInventory = async function (req, res, next) {
+  try {
+    let {
+      classification_id,
+      inv_make,
+      inv_model,
+      inv_description,
+      inv_price,
+      inv_year,
+      inv_miles,
+      inv_color,
+      inv_image,
+      inv_thumbnail
+    } = req.body
 
+    inv_image = inv_image || "/images/no-image.png"
+    inv_thumbnail = inv_thumbnail || "/images/no-image.png"
+
+    const addedItem = await invModel.addInventory(
+      parseInt(classification_id),
+      inv_make,
+      inv_model,
+      inv_description,
+      parseFloat(inv_price),
+      parseInt(inv_year),
+      parseInt(inv_miles),
+      inv_color,
+      inv_image,
+      inv_thumbnail
+    )
+
+    if (addedItem && addedItem.rows && addedItem.rows.length > 0) {
+      req.flash("notice", `${inv_make} ${inv_model} added successfully.`)
+      return res.redirect("/inv/")
+    } else {
+      req.flash("notice", "Sorry, the inventory item could not be added.")
+      return res.redirect("/inv/add-inventory")
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+
+/* ***************************
+ * Export Controller
+ ***************************/
 module.exports = invCont
-
