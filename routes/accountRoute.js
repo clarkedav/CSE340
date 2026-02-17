@@ -26,14 +26,43 @@ router.post(
   utilities.handleErrors(accountController.accountLogin)
 )
 
-// Account management view → requires JWT + login
+// Account management view
 router.get(
   "/",
-  utilities.checkJWTToken,       // ensure token is valid
-  utilities.checkLogin,          // ensure user is logged in
+  utilities.checkJWTToken,
+  utilities.checkLogin,
   utilities.handleErrors(accountController.buildManagement)
 )
 
+// Task 5 - Deliver account update view
+router.get(
+  "/update/:account_id",
+  utilities.checkJWTToken,
+  utilities.checkLogin,
+  utilities.handleErrors(accountController.buildUpdateView)
+)
 
+// Task 5 - Process account info update
+router.post(
+  "/update-info",
+  utilities.checkJWTToken,
+  utilities.checkLogin,
+  regValidate.updateAccountRules(),
+  regValidate.checkUpdateData,
+  utilities.handleErrors(accountController.updateAccountInfo)
+)
+
+// Task 5 - Process password update
+router.post(
+  "/update-password",
+  utilities.checkJWTToken,
+  utilities.checkLogin,
+  regValidate.updatePasswordRules(),
+  regValidate.checkPasswordData,
+  utilities.handleErrors(accountController.updatePassword)
+)
+
+// Task 6 - Logout
+router.get("/logout", accountController.accountLogout)
 
 module.exports = router

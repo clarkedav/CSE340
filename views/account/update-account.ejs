@@ -1,0 +1,69 @@
+<nav class="main-nav">
+    <%- nav %>
+</nav>
+
+<% if (messages && messages.notice && messages.notice.length> 0) { %>
+    <div class="notice-box">
+        <% messages.notice.forEach(function(msg) { %>
+            <p>
+                <%= msg %>
+            </p>
+            <% }) %>
+    </div>
+    <% } %>
+
+        <% if (errors && errors.length> 0) { %>
+            <div class="error-box">
+                <% errors.forEach(function(err) { %>
+                    <p>
+                        <%= err.msg %>
+                    </p>
+                    <% }) %>
+            </div>
+            <% } %>
+
+                <main class="form-container">
+                    <h1>
+                        <%= title %>
+                    </h1>
+
+                    <!-- Form 1: Account Info Update -->
+                    <h2 class="form-section-title">Account Information</h2>
+                    <form action="/account/update-info" method="POST" class="account-form">
+                        <input type="hidden" name="account_id"
+                            value="<%= sticky ? sticky.account_id : locals.accountData.account_id %>">
+
+                        <label for="account_firstname">First Name</label>
+                        <input type="text" id="account_firstname" name="account_firstname" required
+                            value="<%= sticky ? sticky.account_firstname : locals.accountData.account_firstname %>">
+
+                        <label for="account_lastname">Last Name</label>
+                        <input type="text" id="account_lastname" name="account_lastname" required
+                            value="<%= sticky ? sticky.account_lastname : locals.accountData.account_lastname %>">
+
+                        <label for="account_email">Email Address</label>
+                        <input type="email" id="account_email" name="account_email" required
+                            value="<%= sticky ? sticky.account_email : locals.accountData.account_email %>">
+
+                        <button type="submit">Update Account</button>
+                    </form>
+
+                    <hr class="form-divider">
+
+                    <!-- Form 2: Change Password -->
+                    <h2 class="form-section-title">Change Password</h2>
+                    <p class="password-rules">
+                        Enter a new password to update it. Must be at least 12 characters and include:
+                        an uppercase letter, a lowercase letter, a number, and a special character.
+                    </p>
+                    <form action="/account/update-password" method="POST" class="account-form">
+                        <input type="hidden" name="account_id"
+                            value="<%= sticky ? sticky.account_id : locals.accountData.account_id %>">
+
+                        <label for="account_password">New Password</label>
+                        <input type="password" id="account_password" name="account_password" required
+                            pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
+
+                        <button type="submit">Change Password</button>
+                    </form>
+                </main>

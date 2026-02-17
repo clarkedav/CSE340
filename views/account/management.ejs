@@ -1,23 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
+<nav class="main-nav">
+    <%- nav %>
+</nav>
 
-<head>
-    <meta charset="UTF-8">
-    <title>
-        <%= title %>
-    </title>
-    <link rel="stylesheet" href="/css/styles.css">
-</head>
+<% if (messages && messages.notice && messages.notice.length> 0) { %>
+    <div id="flashMessage" class="notice-box">
+        <% messages.notice.forEach(function(msg) { %>
+            <p>
+                <%= msg %>
+            </p>
+            <% }) %>
+    </div>
+    <% } %>
 
-<body>
-    <main class="form-container">
-        <h1>
-            <%= title %>
-        </h1>
-
-        <% if (messages.notice) { %>
-            <div class="notice-box">
-                <% messages.notice.forEach(msg=> { %>
+        <% if (messages && messages.error && messages.error.length> 0) { %>
+            <div id="flashMessage" class="error-box">
+                <% messages.error.forEach(function(msg) { %>
                     <p>
                         <%= msg %>
                     </p>
@@ -25,18 +22,34 @@
             </div>
             <% } %>
 
-                <% if (errors && errors.length> 0) { %>
-                    <div class="flash-error">
-                        <% errors.forEach(err=> { %>
-                            <p>
-                                <%= err.msg %>
-                            </p>
-                            <% }) %>
-                    </div>
-                    <% } %>
+                <main class="account-management">
+                    <h1>
+                        <%= title %>
+                    </h1>
 
-                    <p><span class="logged-in-text">You're logged in.</span></p>
-    </main>
-</body>
+                    <!-- Task 3: Greet by first name -->
+                    <h2>Welcome <%= locals.accountData ? locals.accountData.account_firstname : '' %>
+                    </h2>
 
-</html>
+                    <!-- Update account link - visible to ALL users -->
+                    <p>
+                        <a href="/account/update/<%= locals.accountData ? locals.accountData.account_id : '' %>"
+                            class="update-link">
+                            Update Account Information
+                        </a>
+                    </p>
+
+                    <!-- Only Employee or Admin sees Inventory Management -->
+                    <% if (locals.accountData && (locals.accountData.account_type==='Employee' ||
+                        locals.accountData.account_type==='Admin' )) { %>
+                        <h3>Inventory Management</h3>
+                        <p><a href="/inv/" class="inv-link">Manage Inventory</a></p>
+                        <% } %>
+                </main>
+
+                <script>
+                    const flash = document.getElementById("flashMessage")
+                    if (flash) {
+                        setTimeout(() => { flash.style.display = "none" }, 5000)
+                    }
+                </script>

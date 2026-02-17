@@ -68,10 +68,7 @@ async function registerAccount(req, res) {
     }
 
     const regResult = await accountModel.registerAccount(
-        account_firstname,
-        account_lastname,
-        account_email,
-        hashedPassword
+        account_firstname, account_lastname, account_email, hashedPassword
     )
 
     if (regResult && regResult.rowCount > 0) {
@@ -123,7 +120,6 @@ async function accountLogin(req, res) {
     delete accountData.account_password
 
     const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 })
-
     res.cookie("jwt", accessToken, {
         httpOnly: true,
         maxAge: 3600 * 1000,
@@ -135,13 +131,106 @@ async function accountLogin(req, res) {
 
 // Account management view
 async function buildManagement(req, res, next) {
-    const nav = await utilities.getNav()
-    res.render("account/management", {
-        title: "Account Management",
-        nav,
-        errors: null,
-        messages: req.flash()
-    })
+    try {
+        const nav = await utilities.getNav()
+        res.render("account/management", {
+            title: "Account Management",
+            nav,
+            errors: null,
+            messages: req.flash()
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// Task 5 - Deliver account update view
+async function buildUpdateView(req, res, next) {
+    try {
+        const nav = await utilities.getNav()
+        const account_id = parseInt(req.params.account_id)
+        const accountData = await accountModel.getAccountById(account_id)
+        res.render("account/update-account", {
+            title: "Update Account",
+            nav,
+            errors: null,
+            sticky: accountData,
+            messages: req.flash()
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// Task 5 - Process account info update
+async function updateAccountInfo(req, res, next) {
+    try {
+        const nav = await utilities.getNav()
+        const { account_id, account_firstname, account_lastname, account_email } = req.body
+
+        const updateResult = await accountModel.updateAccount(
+            parseInt(account_id), account_firstname, account_lastname, account_email
+        )
+
+        if (updateResult) {
+            // Refresh JWT with updated info
+            const updatedData = await accountModel.getAccountById(parseInt(account_id))
+            delete updatedData.account_password
+            const accessToken = jwt.sign(updatedData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 })
+            res.cookie("jwt", accessToken, {
+                httpOnly: true,
+                maxAge: 3600 * 1000,
+                secure: process.env.NODE_ENV !== "development"
+            })
+            req.flash("notice", "Account updated successfully.")
+            return res.redirect("/account")
+        } else {
+            req.flash("notice", "Account update failed. Please try again.")
+            return res.render("account/update-account", {
+                title: "Update Account",
+                nav,
+                errors: null,
+                sticky: req.body,
+                messages: req.flash()
+            })
+        }
+    } catch (error) {
+        next(error)
+    }
+}
+
+// Task 5 - Process password update
+async function updatePassword(req, res, next) {
+    try {
+        const nav = await utilities.getNav()
+        const { account_id, account_password } = req.body
+
+        const hashedPassword = await bcrypt.hash(account_password, 10)
+        const updateResult = await accountModel.updatePassword(parseInt(account_id), hashedPassword)
+
+        if (updateResult) {
+            req.flash("notice", "Password changed successfully.")
+            return res.redirect("/account")
+        } else {
+            req.flash("notice", "Password change failed. Please try again.")
+            return res.render("account/update-account", {
+                title: "Update Account",
+                nav,
+                errors: null,
+                sticky: req.body,
+                messages: req.flash()
+            })
+        }
+    } catch (error) {
+        next(error)
+    }
+}
+
+// Task 6 - Logout
+async function accountLogout(req, res) {
+    res.clearCookie("jwt")
+    req.flash("notice", "You have been logged out.")
+    return res.redirect("/")
 }
 
 module.exports = {
@@ -149,5 +238,9 @@ module.exports = {
     buildRegister,
     registerAccount,
     accountLogin,
-    buildManagement
+    buildManagement,
+    buildUpdateView,
+    updateAccountInfo,
+    updatePassword,
+    accountLogout
 }
