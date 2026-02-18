@@ -41,8 +41,7 @@ app.use(session({
 // Flash
 app.use(flash())
 
-// Task 1 - Set loggedin/accountData locals on EVERY request
-// This makes the header show correct login state on all pages
+// Set loggedin/accountData locals on EVERY request
 app.use(utilities.setLocals)
 
 // Static files
@@ -57,8 +56,8 @@ app.set("layout", "./layouts/layout")
 app.use("/account", accountRoute)
 app.get("/", utilities.handleErrors(baseController.buildHome))
 
-// Task 2 - checkAccountType ensures only Employee/Admin access /inv admin routes
-app.use("/inv", utilities.checkJWTToken, utilities.checkAccountType, inventoryRoute)
+// Public + protected inventory routes handled inside inventoryRoute.js
+app.use("/inv", inventoryRoute)
 
 app.get("/trigger-error", utilities.handleErrors(baseController.triggerError))
 

@@ -2,113 +2,102 @@ const express = require("express")
 const router = express.Router()
 const utilities = require("../utilities/")
 const invController = require("../controllers/invController")
-// Fix #2: Import checkInventoryData alongside the other validators
 const { inventoryRules, checkInventoryData, checkUpdateData } = require("../utilities/inventory-validation")
 
 /* ***************************
- * Inventory Management View
+ * PUBLIC ROUTES
+ * Accessible by all visitors — no login required
  * ************************** */
-router.get(
-  "/",
-  // Fix #1: Removed duplicate utilities.checkJWTToken — it is already applied
-  // in server.js at the /inv level, so calling it again here is redundant
-  utilities.checkLogin,
-  utilities.handleErrors(invController.buildManagement)
-)
+
+// Classification view (e.g. /inv/type/5)
+router.get("/type/:classification_id", utilities.handleErrors(invController.buildByClassificationId))
+
+// Vehicle detail view
+router.get("/detail/:inv_id", utilities.handleErrors(invController.buildByInventoryId))
+
+// Return JSON inventory by classification (used by management JS)
+router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON))
+
 
 /* ***************************
- * Add Classification View
+ * PROTECTED ROUTES
+ * Only Employee or Admin can access these
  * ************************** */
+
+// Inventory Management View
 router.get(
-  "/add-classification",
-  // Fix #1: Removed duplicate utilities.checkJWTToken
-  utilities.checkLogin,
-  utilities.handleErrors(invController.buildAddClassification)
+    "/",
+    utilities.checkJWTToken,
+    utilities.checkAccountType,
+    utilities.handleErrors(invController.buildManagement)
 )
 
-/* ***************************
- * Process Add Classification
- * ************************** */
+// Add Classification View
+router.get(
+    "/add-classification",
+    utilities.checkJWTToken,
+    utilities.checkAccountType,
+    utilities.handleErrors(invController.buildAddClassification)
+)
+
+// Process Add Classification
 router.post(
-  "/add-classification",
-  // Fix #1: Removed duplicate utilities.checkJWTToken
-  utilities.checkLogin,
-  utilities.handleErrors(invController.addClassification)
+    "/add-classification",
+    utilities.checkJWTToken,
+    utilities.checkAccountType,
+    utilities.handleErrors(invController.addClassification)
 )
 
-/* ***************************
- * Add Inventory View
- * ************************** */
+// Add Inventory View
 router.get(
-  "/add-inventory",
-  // Fix #1: Removed duplicate utilities.checkJWTToken
-  utilities.checkLogin,
-  utilities.handleErrors(invController.buildAddInventory)
+    "/add-inventory",
+    utilities.checkJWTToken,
+    utilities.checkAccountType,
+    utilities.handleErrors(invController.buildAddInventory)
 )
 
-/* ***************************
- * Process Add Inventory
- * ************************** */
+// Process Add Inventory
 router.post(
-  "/add-inventory",
-  // Fix #1: Removed duplicate utilities.checkJWTToken
-  utilities.checkLogin,
-  inventoryRules(),
-  // Fix #2: Added missing checkInventoryData middleware so validation errors
-  // are caught and the form is re-rendered with sticky data and error messages
-  checkInventoryData,
-  utilities.handleErrors(invController.addInventory)
+    "/add-inventory",
+    utilities.checkJWTToken,
+    utilities.checkAccountType,
+    inventoryRules(),
+    checkInventoryData,
+    utilities.handleErrors(invController.addInventory)
 )
 
-
-/* ***************************
- * Return JSON inventory by classification
- * ************************** */
+// Edit Inventory View
 router.get(
-  "/getInventory/:classification_id",
-  utilities.handleErrors(invController.getInventoryJSON)
+    "/edit/:inv_id",
+    utilities.checkJWTToken,
+    utilities.checkAccountType,
+    utilities.handleErrors(invController.editInventoryView)
 )
 
-/* ***************************
- * Edit Inventory View
- * ************************** */
-router.get(
-  "/edit/:inv_id",
-  // Fix #1: Removed duplicate utilities.checkJWTToken
-  utilities.checkLogin,
-  utilities.handleErrors(invController.editInventoryView)
-)
-
-/* ***************************
- * Process Inventory Update
- * ************************** */
+// Process Inventory Update
 router.post(
-  "/update",
-  // Fix #1: Removed duplicate utilities.checkJWTToken
-  utilities.checkLogin,
-  inventoryRules(),
-  checkUpdateData,
-  utilities.handleErrors(invController.updateInventory)
+    "/update",
+    utilities.checkJWTToken,
+    utilities.checkAccountType,
+    inventoryRules(),
+    checkUpdateData,
+    utilities.handleErrors(invController.updateInventory)
 )
 
-/* ***************************
- * Delete Inventory View (confirmation)
- ************************** */
+// Delete Inventory View
 router.get(
-  "/delete/:inv_id",
-  // Fix #1: Removed duplicate utilities.checkJWTToken
-  utilities.checkLogin,
-  utilities.handleErrors(invController.deleteInventoryView)
+    "/delete/:inv_id",
+    utilities.checkJWTToken,
+    utilities.checkAccountType,
+    utilities.handleErrors(invController.deleteInventoryView)
 )
 
-/* ***************************
- * Process Inventory Delete
- ************************** */
+// Process Inventory Delete
 router.post(
-  "/delete",
-  // Fix #1: Removed duplicate utilities.checkJWTToken
-  utilities.checkLogin,
-  utilities.handleErrors(invController.deleteInventory)
+    "/delete",
+    utilities.checkJWTToken,
+    utilities.checkAccountType,
+    utilities.handleErrors(invController.deleteInventory)
 )
 
 module.exports = router

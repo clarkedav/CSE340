@@ -1,9 +1,21 @@
-<% if (title) { %>
-    <h1>
-        <%= title %>
-    </h1>
-    <% } else { res.redirect('/') } %>
+<nav class="main-nav">
+    <%- nav %>
+</nav>
 
-    <%# messages() %>
+<% if (messages && messages.notice && messages.notice.length> 0) { %>
+    <div class="notice-box">
+        <% messages.notice.forEach(function(msg) { %>
+            <p>
+                <%= msg %>
+            </p>
+            <% }) %>
+    </div>
+    <% } %>
 
-    <%- grid %>
+        <% if (title) { %>
+            <h1>
+                <%= title %>
+            </h1>
+            <% } %>
+
+                <%- grid %>
