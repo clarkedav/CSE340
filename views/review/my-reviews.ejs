@@ -1,0 +1,52 @@
+<% if (messages && messages.notice && messages.notice.length> 0) { %>
+    <div class="notice-box">
+        <% messages.notice.forEach(function(msg) { %>
+            <p>
+                <%= msg %>
+            </p>
+            <% }) %>
+    </div>
+    <% } %>
+
+        <main class="reviews-management">
+            <h1>
+                <%= title %>
+            </h1>
+
+            <% if (reviews && reviews.length> 0) { %>
+                <div class="reviews-list">
+                    <% reviews.forEach(function(review) { %>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <span class="vehicle-name">
+                                    <a href="/inv/detail/<%= review.inv_id %>">
+                                        <%= review.inv_year %>
+                                            <%= review.inv_make %>
+                                                <%= review.inv_model %>
+                                    </a>
+                                </span>
+                                <span class="review-stars">
+                                    <% for (let i=1; i <=5; i++) { %>
+                                        <span class="<%= i <= review.review_rating ? 'star filled' : 'star' %>">★</span>
+                                        <% } %>
+                                </span>
+                                <span class="review-date">
+                                    <%= new Date(review.review_date).toLocaleDateString() %>
+                                </span>
+                            </div>
+                            <p class="review-text">
+                                <%= review.review_text %>
+                            </p>
+                            <form action="/review/delete" method="POST" class="delete-review-form">
+                                <input type="hidden" name="review_id" value="<%= review.review_id %>">
+                                <input type="hidden" name="inv_id" value="<%= review.inv_id %>">
+                                <button type="submit" class="delete-review-btn">Delete Review</button>
+                            </form>
+                        </div>
+                        <% }) %>
+                </div>
+                <% } else { %>
+                    <p class="no-reviews">You haven't written any reviews yet. <a href="/">Browse vehicles</a> to leave
+                        a review.</p>
+                    <% } %>
+        </main>

@@ -10,6 +10,7 @@ require("dotenv").config()
 const baseController = require("./controllers/baseController")
 const inventoryRoute = require("./routes/inventoryRoute")
 const accountRoute = require("./routes/accountRoute")
+const reviewRoute = require("./routes/reviewRoute")
 const utilities = require("./utilities/")
 const cookieParser = require("cookie-parser")
 
@@ -58,6 +59,9 @@ app.get("/", utilities.handleErrors(baseController.buildHome))
 
 // Public + protected inventory routes handled inside inventoryRoute.js
 app.use("/inv", inventoryRoute)
+
+// Review routes
+app.use("/review", reviewRoute)
 
 app.get("/trigger-error", utilities.handleErrors(baseController.triggerError))
 

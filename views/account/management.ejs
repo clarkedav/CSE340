@@ -1,7 +1,3 @@
-<nav class="main-nav">
-    <%- nav %>
-</nav>
-
 <% if (messages && messages.notice && messages.notice.length> 0) { %>
     <div id="flashMessage" class="notice-box">
         <% messages.notice.forEach(function(msg) { %>
@@ -27,7 +23,7 @@
                         <%= title %>
                     </h1>
 
-                    <!-- Task 3: Greet by first name -->
+                    <!-- Greet by first name -->
                     <h2>Welcome <%= locals.accountData ? locals.accountData.account_firstname : '' %>
                     </h2>
 
@@ -37,6 +33,11 @@
                             class="update-link">
                             Update Account Information
                         </a>
+                    </p>
+
+                    <!-- My Reviews link - visible to ALL users -->
+                    <p>
+                        <a href="/review/my-reviews" class="update-link">My Reviews</a>
                     </p>
 
                     <!-- Only Employee or Admin sees Inventory Management -->

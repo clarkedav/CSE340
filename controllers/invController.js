@@ -1,18 +1,8 @@
 const invModel = require("../models/inventory-model")
+const reviewModel = require("../models/review-model")
 const utilities = require("../utilities/")
 
 const invCont = {}
-
-/* ***************************
- * Helper - Fix image path
- * If path doesn't include /vehicles/, correct it
- ***************************/
-function fixImagePath(imgPath, filename) {
-  if (!imgPath || imgPath === '/images/no-image.png') {
-    return `/images/vehicles/${filename}`
-  }
-  return imgPath
-}
 
 /* ***************************
  * PUBLIC - Build by Classification
@@ -74,6 +64,9 @@ invCont.buildByInventoryId = async function (req, res, next) {
       return res.redirect("/")
     }
 
+    const reviews = await reviewModel.getReviewsByInventoryId(parseInt(inv_id))
+    const ratingData = await reviewModel.getAverageRating(parseInt(inv_id))
+
     const vehicleHTML = `
       <div class="vehicle-detail">
         <img src="${vehicle.inv_image}" alt="${vehicle.inv_make} ${vehicle.inv_model}">
@@ -93,6 +86,11 @@ invCont.buildByInventoryId = async function (req, res, next) {
       title: `${vehicle.inv_make} ${vehicle.inv_model}`,
       nav,
       vehicleHTML,
+      vehicle_id: inv_id,
+      reviews,
+      ratingData,
+      errors: null,
+      sticky: null,
       messages: req.flash()
     })
   } catch (error) {
